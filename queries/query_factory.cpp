@@ -24,7 +24,7 @@ class QueryFactory
             { "INSERT", INSERT },
             { "UPDATE", UPDATE },
             { "DELETE", DELETE },
-            { "DROP", DROP};
+            { "DROP", DROP}
         };
 
         auto itr = commandStrings.find(input);

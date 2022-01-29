@@ -7,17 +7,17 @@ class QueryFactory
   public :
     enum Command { SELECT, CREATE, INSERT, UPDATE, DELETE, DROP, INVALID };
 
-    Command resolveCommand (std::string input) {
-        if( input == "SELECT" ) return SELECT;
-        if( input == "CREATE" ) return CREATE;
-        if( input == "INSERT" ) return INSERT;
-        if( input == "UPDATE" ) return UPDATE;
-        if( input == "DELETE" ) return DELETE;
-        if( input == "DROP" ) return DROP;
-        return INVALID;
-    }
+    // Command resolveCommand (std::string input) {
+    //     if( input == "SELECT" ) return SELECT;
+    //     if( input == "CREATE" ) return CREATE;
+    //     if( input == "INSERT" ) return INSERT;
+    //     if( input == "UPDATE" ) return UPDATE;
+    //     if( input == "DELETE" ) return DELETE;
+    //     if( input == "DROP" ) return DROP;
+    //     return INVALID;
+    // }
 
-    Command resolveCommandBis(std::string input) {
+    Command resolveCommand (std::string input) {
         static const std::map<std::string, Command> commandStrings {
             { "SELECT", SELECT },
             { "CREATE", CREATE },

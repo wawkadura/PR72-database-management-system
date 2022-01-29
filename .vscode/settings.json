@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.php": "php",
         "atomic": "cpp",
         "*.tcc": "cpp",
         "cctype": "cpp",
@@ -42,6 +43,7 @@
         "optional": "cpp",
         "tuple": "cpp",
         "fstream": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "bit": "cpp"
     }
 }

@@ -1,8 +1,10 @@
 #include <iostream>
+#include "db_info.h"
+#include "table_file.h"
 
 class SqlQuery {
 private:
-	string query;
+	std::string query;
     DbInfo db;
     TableFile table;
 public:
@@ -10,9 +12,7 @@ public:
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();
-    array<SqlRow> where(){
-
-    };
-    string getQuery() const {return query;};
+    Array<SqlRow> where();
+    std::string getQuery() const {return query;};
     ~SqlQuery(){};
 };

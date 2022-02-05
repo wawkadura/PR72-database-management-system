@@ -1,13 +1,13 @@
-#ifndef INSERT_QUERY_H
-#define INSERT_QUERY_H
+#ifndef DROP_QUERY_H
+#define DROP_QUERY_H
 
-#include "sql_query.h"
+#include "drop_query.h"
 
-class InsertQuery : public SqlQuery {
+class DropQuery : public DropQuery {
 private:
 
 public:
-    InsertQuery();
+    DropTableQuery();
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

@@ -1,13 +1,13 @@
-#ifndef INSERT_QUERY_H
-#define INSERT_QUERY_H
+#ifndef DELETE_QUERY_H
+#define DELETE_QUERY_H
 
 #include "sql_query.h"
 
-class InsertQuery : public SqlQuery {
+class DeleteQuery : public SqlQuery {
 private:
 
 public:
-    InsertQuery();
+    DeleteQuery();
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

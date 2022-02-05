@@ -1,19 +1,19 @@
-#ifndef DEF_TABLE_FILE
-#define DEF_TABLE_FILE
+#ifndef TABLE_FILE_H
+#define TABLE_FILE_H
  
 #include <iostream>
 #include <string>
 
-class Table_file
+class TableFile
 {
     public:
-        Table_file();
+        TableFile();
         bool exist();
         void open();
         void close();
  
     private:
-        std::string source_file();
+        std::string source_file;
         std::string query();
         
         

@@ -1,7 +1,11 @@
 #ifndef QUERY_FACTORY_H
 #define QUERY_FACTORY_H
-#include "db_info.h"
+
 #include <iostream>
+#include <algorithm>
+
+#include "sql_query.h"
+#include "db_info.h"
 
 using namespace std;
 
@@ -9,6 +13,7 @@ using namespace std;
 class QueryFactory 
 { 
   public :
+    QueryFactory();
     Command resolveCommand (std::string input);
     static SqlQuery* generate_query(std::string sql, DbInfo db);
 }

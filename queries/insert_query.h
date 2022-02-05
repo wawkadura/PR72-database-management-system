@@ -7,7 +7,7 @@ class InsertQuery : public SqlQuery {
 private:
 
 public:
-    InsertQuery();
+    InsertQuery(std::string query, DbInfo db);
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

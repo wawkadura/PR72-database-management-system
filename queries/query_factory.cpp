@@ -1,9 +1,8 @@
-#include <iostream>
 #include "query_factory.h"
 
 using namespace std;
 
-// Command resolveCommand (std::string input) {
+// Command QueryFactory::resolveCommand (std::string input) {
 //     if( input == "SELECT" ) return SELECT;
 //     if( input == "CREATE" ) return CREATE;
 //     if( input == "INSERT" ) return INSERT;
@@ -12,10 +11,11 @@ using namespace std;
 //     if( input == "DROP" ) return DROP;
 //     return INVALID;
 // }
+QueryFactory::QueryFactory(){};
 
-Command QueryFactory::resolveCommand(std::string input)
+Command QueryFactory::resolveCommand (std::string input)
 {
-    static const std::map<std::string, Command> commandStrings{
+    static const map<string, Command> commandStrings{
         {"SELECT", SELECT},
         {"CREATE", CREATE},
         {"INSERT", INSERT},
@@ -35,13 +35,19 @@ static SqlQuery *QueryFactory::generate_query(std::string sql, DbInfo db)
 {
     SqlQuery *query = NULL;
 
-    std::string command = sql.substr(0, sql.find(" "));
+    // get first command
+    int spaceIndex = sql.find(" ");
+    std::string command = sql.substr(0, spaceIndex);
+
     // parse to upper case
     std::transform(command.begin(), command.end(), command.begin(),
                    [](unsigned char c)
                    { return std::toupper(c); });
 
-    switch (resolveCommand(command))
+    // as first command is already checked, send the rest
+    sql = sql.substr(spaceIndex+1);
+
+    switch (QueryFactory::resolveCommand(command))
     {
     case SELECT:
         query = new SelectQuery(sql, db);

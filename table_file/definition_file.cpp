@@ -7,7 +7,9 @@
  
 class Definition_file : public Table_file
 {
- 
+    public:
+        table_definition get_table_definition(); 
+        void write_table_definition(const table_definition &def);
 };
  
 #endif

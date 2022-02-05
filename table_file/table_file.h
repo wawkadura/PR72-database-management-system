@@ -6,17 +6,14 @@
 
 class TableFile
 {
+    private:
+        std::string table; 
     public:
-        TableFile();
+        TableFile(std::string _table);
         bool exist();
         void open();
         void close();
- 
-    private:
-        std::string source_file;
-        std::string query();
-        
-        
+          
 };
  
 #endif

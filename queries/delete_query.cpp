@@ -2,7 +2,7 @@
 
 using namespace std;
 
-DeleteQuery::DeleteQuery(){}
+DeleteQuery::DeleteQuery(std::string query, DbInfo db):SqlQuery(query, db){}
 void DeleteQuery::parse(string user_sql) {}
 void DeleteQuery::check() {}
 void DeleteQuery::execute(){}

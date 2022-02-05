@@ -7,7 +7,7 @@ class UpdateQuery : public SqlQuery {
 private:
 
 public:
-    UpdateQuery();
+    UpdateQuery(std::string query, DbInfo db);
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

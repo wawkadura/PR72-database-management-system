@@ -3,22 +3,21 @@ using namespace std;
 #include <iostream> 
 #include <fstream> 
 #include "table_file.h"
+#include "error/query_error_exception.h"
 
-TableFile::TableFile(std::string _table): table(_table){}
+TableFile::TableFile(std::string _table): table(_table){};
 
-bool TableFile::exist(){
+void TableFile::exist(){
 
     struct stat buffer;
     //check if directory exit
     if (stat(table.c_str(), &buffer) != 0) {
-    	std::cout << "Directory doesn't exist!";
-        return 0;
+    	cout << "Directory doesn't exist!";
+        throw(QueryErrorException("Directory doesn't exist!"));
     } else {
-    	std::cout << "Directory exists!";
-        return 1;
+    	cout << "Directory exists!";
     }
-    
-};
+};   
 
 void TableFile::close(){
     ofstream file;  
@@ -30,7 +29,6 @@ void TableFile::close(){
     else{  
         cout<<"Error in file opening"<<endl;  
     }  
-
 };
 
 void TableFile::open(){

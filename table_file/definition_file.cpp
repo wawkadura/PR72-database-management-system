@@ -5,7 +5,7 @@
 #include <string>
 #include "Table_file.h"
  
-class Definition_file : public Table_file
+class Definition_file : public TableFile
 {
     public:
         table_definition get_table_definition(); 

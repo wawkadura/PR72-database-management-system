@@ -6,14 +6,14 @@
 
 class TableFile
 {
-    private:
+    protected:
         std::string table; 
     public:
         TableFile(std::string _table);
-        bool exist();
+        void exist();
         void open();
         void close();
-          
+      
 };
  
 #endif

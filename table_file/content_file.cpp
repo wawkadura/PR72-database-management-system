@@ -7,30 +7,37 @@ using namespace std;
 #include <vector>
 #include "table_file.h"
 #include <fstream>
+#include "error/query_error_exception.h"
  
-class Content_file : public Table_file
+class ContentFile : public TableFile // the file class inherits the protected attribute from the parent class
 {   
     public :
-        std::vector<uint8_t> read_record(uint16_t length, uint32_t offset); 
+        ContentFile();
+        vector<string> read_record(uint16_t length, uint32_t offset); 
         void write_record(const std::vector<uint8_t> &record, uint32_t offset);   
 };
 
-//note done
-std::vector<uint8_t> Content_file::read_record(uint16_t length, uint32_t offset){
-    ofstream ofstr("test.txt", std::ofstream::binary);
+vector<string> ContentFile::read_record(uint16_t length, uint32_t offset){
+    ifstream file(this->table);
     string line;
-    ofstr.seekp(offset, ios::beg); // set the possition of the pointeur
-    ofstr >> line; //read line in the file
-    return line.length();
-}
-//note done
-void Content_file::write_record(const std::vector<uint8_t> &record, uint32_t offset){
-
-    ofstream ofstr("test.txt", std::ofstream::binary);
-    for (int i = 0; i < offset; i++){
-        ofstr.seekp('\n', std::ios_base::cur); // set the possition of the pointeur
+    vector<string> mylines;
+    
+    file.seekg(offset*length, ios::beg); // set the possition of the pointeur
+    while (getline(file, line)) //read lines in the file 
+    {   
+        mylines.push_back(line);
+        return mylines;
     };
-    ofstr<<record; //write line in the file
+}
+
+void ContentFile::write_record(const vector<uint8_t> &record, uint32_t offset){
+
+    ifstream file(this->table);
+    file.seekg('\n', ios::end); // set the possition of the pointeur
+    for (string i = 0; i < record.size(); i++){
+        file<<i; //write line in the file
+    };
+    
 }
 
 

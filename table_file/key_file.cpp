@@ -6,7 +6,7 @@
 #include <string>
 #include "table_file.h"
  
-class Key_file : public Table_file
+class Key_file : public TableFile
 {
     public:
         uint64_t get_next_key();

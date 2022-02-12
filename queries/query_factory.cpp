@@ -1,4 +1,5 @@
 #include "query_factory.h"
+#include <map>
 
 using namespace std;
 

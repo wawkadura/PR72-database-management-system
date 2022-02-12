@@ -7,10 +7,12 @@
 #include "db_info.h"
 #include "table_file.h"
 #include "sql_row.h"
+#include <map>
+#include <vector>
 
 struct SQLDETAILS {   // Declare SQLDETAILS struct type
     std::string primaryCommand;  //
-    std::map<std::string, std::string> columnsMapper;
+    map<std::string, std::string> columnsMapper;
     TableFile table;
     std::string conditions;
 };
@@ -19,6 +21,7 @@ class SqlQuery {
 private:
 	// std::string query;
     DbInfo db;
+protected: 
     SQLDETAILS sqlDetails;
 public:
     SqlQuery(DbInfo _db);

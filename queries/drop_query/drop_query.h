@@ -3,11 +3,11 @@
 
 #include "drop_query.h"
 
-class DropQuery : public DropQuery {
+class DropQuery {
 private:
 
 public:
-    DropTableQuery();
+    DropQuery();
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

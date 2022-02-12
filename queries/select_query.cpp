@@ -7,8 +7,7 @@ SelectQuery::SelectQuery(std::string query, DbInfo db):SqlQuery(db){
     SelectQuery::parse(query);
 }
 void SelectQuery::parse(string user_sql) {
-    SQLDETAILS details;
-    details.primaryCommand = "SELECT";
+    sqlDetails.primaryCommand = "SELECT";
 
     string upperCaseSQL = SqlQuery::parseToUpper(user_sql);
 
@@ -23,10 +22,10 @@ void SelectQuery::parse(string user_sql) {
     // split columns by , loop in and push_back in map
 
 
-    details.table = TableFile(user_sql.substr(fromIndex+1, user_sql.find(' ',fromIndex)));
+    sqlDetails.table = TableFile(user_sql.substr(fromIndex+1, user_sql.find(' ',fromIndex)));
 
     int whereIndex = upperCaseSQL.find("WHERE");
-    details.conditions = user_sql.substr(whereIndex+1);
+    sqlDetails.conditions = user_sql.substr(whereIndex+1);
 
 
 }

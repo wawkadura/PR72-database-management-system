@@ -2,6 +2,7 @@
 #define DROP_TABLE_QUERY_H
 
 #include "drop_query.h"
+#include <string>
 
 class DropTableQuery : public DropQuery {
 private:

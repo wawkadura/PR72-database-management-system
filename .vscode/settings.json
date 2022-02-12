@@ -44,6 +44,9 @@
         "tuple": "cpp",
         "fstream": "cpp",
         "sstream": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "ranges": "cpp"
     }
 }

@@ -1,7 +1,7 @@
 #ifndef DEFINATION_FILE_H
 #define DEFINITION_FILE_H
 
-#include "Table_file.h"
+#include "table_file.h"
 #include "../utils.h"
 
 class DefinitionFile : public TableFile

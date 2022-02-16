@@ -61,7 +61,7 @@ void UpdateQuery::parse(string user_sql)
     if (setters.size() < 1)
         throw(QueryErrorException("missing setters"));
 
-    if (!validateSetters(setters, sqlDetails.columnsMapper))
+    if (!validateSetters(setters, sqlDetails.setColumnsMapper))
         throw(QueryErrorException("error in setters syntax"));
 
     // Check WHERE
@@ -110,15 +110,15 @@ bool validateSetters(vector<string> setters, map<string, string> &mapper)
 }
 
 
-// Expected : ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
-// Return : [id=5, name="walid", number="06123456789", address="Rue,Belfort" ]
 
 // TODO: implimente body
 bool validateConditions(vector<string> setters)
 {
-    return false;
+    return true;
 }
 
+// Expected : ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
+// Return : [id=5, name="walid", number="06123456789", address="Rue,Belfort" ]
 vector<string> formatSetters(vector<string> setters)
 {
     // CURRENTLY: ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
@@ -167,6 +167,7 @@ bool setColumn(string s, map<string, string> &m)
     m.insert(ss[0],ss[1]);
 }
 
+// TODO : transfer to Utils
 bool isOperator(string s)
 {
     auto itr = operators.find(s);

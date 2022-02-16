@@ -5,9 +5,15 @@
 #include <algorithm>
 
 #include "sql_query.h"
-#include "db_info.h"
+#include "select_query.h"
+#include "insert_query.h"
+#include "update_query/update_query.h"
+#include "delete_query.h"
+#include "../db_info.h"
 
 using namespace std;
+
+enum Command { SELECT, CREATE, INSERT, UPDATE, DELETE, DROP, INVALID };
 
 // Design pattern factory
 class QueryFactory 
@@ -15,9 +21,8 @@ class QueryFactory
   public :
     QueryFactory();
     Command resolveCommand (std::string input);
-    static SqlQuery* generate_query(std::string sql, DbInfo db);
-}
+    SqlQuery* generate_query(std::string sql, DbInfo db);
+};
 
-enum Command { SELECT, CREATE, INSERT, UPDATE, DELETE, DROP, INVALID };
 
 #endif

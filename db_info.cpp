@@ -3,10 +3,10 @@ using namespace std;
 
 DbInfo::DbInfo(string path):current_db_path(path){}
 
-DbInfo::setDbPath(string path){
-    DbInfo::this.current_db_path = path;
+void DbInfo::setDbPath(string path){
+    DbInfo::current_db_path = path;
 }
 
-DbInfo::getDbPath(){
-    return QueryError::this.current_db_path;
+std::string DbInfo::getDbPath(){
+    return DbInfo::current_db_path;
 }

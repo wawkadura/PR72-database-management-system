@@ -2,7 +2,8 @@
 #define DEFINITION_FILE_H
 
 #include "Table_file.h"
- 
+#include "../utils.h"
+
 class DefinitionFile : public TableFile
 {   
     private: 
@@ -13,5 +14,4 @@ class DefinitionFile : public TableFile
         void write_table_definition(const table_definition &def);
 };
 
-// enum field_type_t  {string, int, bool};
 #endif

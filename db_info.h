@@ -7,7 +7,7 @@ private:
 public:
     DbInfo(std::string m);
     std::string getDbPath();
-    void setDbPath();
+    void setDbPath(std::string path);
 };
 
 #endif

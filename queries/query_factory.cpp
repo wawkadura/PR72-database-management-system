@@ -32,9 +32,9 @@ Command QueryFactory::resolveCommand (std::string input)
     return INVALID;
 }
 
-static SqlQuery *QueryFactory::generate_query(std::string sql, DbInfo db)
+SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
 {
-    SqlQuery *query = NULL;
+    SqlQuery* query = NULL;
 
     // get first command
     int spaceIndex = sql.find(" ");
@@ -53,21 +53,21 @@ static SqlQuery *QueryFactory::generate_query(std::string sql, DbInfo db)
     case SELECT:
         query = new SelectQuery(sql, db);
         break;
-    case CREATE:
-        query = new CreateQuery(sql, db);
-        break;
-    case INSERT:
-        query = new InsertQuery(sql, db);
-        break;
-    case UPDATE:
-        query = new UpdateQuery(sql, db);
-        break;
-    case DELETE:
-        query = new DeleteQuery(sql, db);
-        break;
-    case DROP:
-        query = new DropQuery(sql, db);
-        break;
+    // case CREATE:
+    //     query = new CreateQuery(sql, db);
+    //     break;
+    // case INSERT:
+    //     query = new InsertQuery(sql, db);
+    //     break;
+    // case UPDATE:
+    //     query = new UpdateQuery(sql, db);
+    //     break;
+    // case DELETE:
+    //     query = new DeleteQuery(sql, db);
+    //     break;
+    // case DROP:
+    //     query = new DropQuery(sql, db);
+    //     break;
     }
     return query;
 }

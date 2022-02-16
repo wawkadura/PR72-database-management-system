@@ -8,7 +8,7 @@ private:
 
 public:
     InsertQuery(std::string query, DbInfo db);
-    virtual void parse(std::string user_sql);
+    virtual void parse(char *user_sql);
     virtual void check();
     virtual void execute();
 };

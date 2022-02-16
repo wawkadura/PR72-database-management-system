@@ -4,7 +4,7 @@
 #include <iostream>
 
 class SqlRow {
-private:
+protected:
 	std::string query;
 public:
     SqlRow();

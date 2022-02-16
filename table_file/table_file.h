@@ -3,16 +3,19 @@
  
 #include <iostream>
 #include <string>
+#include "../utils.h"
+using namespace std;
 
 class TableFile
 {
     protected:
-        std::string table; 
+        std::string table;
     public:
         TableFile();
         TableFile(std::string _table);
+        std::string toString();
         void exist();
-        void open();
+        ofstream open();
         void close();
       
 };

@@ -3,21 +3,34 @@
 
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 
 #include "../db_info.h"
-#include "../table_file/table_file.h"
+#include "../table_file/table_file.cpp"
+#include "../table_file/definition_file.cpp"
 #include "sql_row.h"
+#include "../utils.h"
 #include <map>
 #include <vector>
 
 struct SQLDETAILS {   // Declare SQLDETAILS struct type
         std::string primaryCommand;  //
-        std::map<std::string, std::string> columnsMapper;
+        // std::map<table, std::string> tabRecords;
+        table_records tabRecords;
         TableFile table;
+        DefinitionFile tableDef;
         std::string conditions;
-        SQLDETAILS() : SQLDETAILS(std::string("aaa"), new std::map<std::string, std::string>, TableFile(), std::string("aaa")) {} // Delegate to the other constructor. 
-        SQLDETAILS(std::string primaryCommand, std::map<std::string, std::string> columnsMapper, TableFile table, std::string conditions);
-    };
+        std::string toString(){
+            std::string str = "primary command:" + primaryCommand 
+                + " \ntable:" + table.toString() 
+                + " \nconditions:" + conditions
+                + " \ncolumns:";
+            for (field_record record : tabRecords.fields) {
+                str = str + record.field_name + "\n";
+            }
+            return str;
+        }
+};
 
 class SqlQuery {
 private:

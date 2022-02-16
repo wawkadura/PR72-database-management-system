@@ -16,7 +16,6 @@ UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery::SqlQuery(db)
 // [table, SET, setter1, ',' , setter2,  WHERE, condition1, and/or, condition2,  ; ]
 void UpdateQuery::parse(string user_sql)
 {
-
     sqlDetails.primaryCommand = "UPDATE";
     string set = "SET";
     string where = "WHERE";
@@ -92,20 +91,10 @@ void UpdateQuery::parse(string user_sql)
     if (position >= words.size() || parseToUpper(words[position]) != end)
         throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
 }
-
-bool notIncludedIn(string s, vector<string> ss, int size)
-{
-    for (int i = 0; i < size; i++)
-        if (s == ss.at(i))
-            return true;
-
-    return false;
-}
-
 void UpdateQuery::check() {}
 void UpdateQuery::execute() {}
 
-// TODO: implimente body
+
 // SET id = 5 , name="walid", number=06123456789,address="Belfort"
 
 bool validateSetters(vector<string> setters, map<string, string> &mapper)
@@ -119,33 +108,7 @@ bool validateSetters(vector<string> setters, map<string, string> &mapper)
     }
     return true;
 }
-// Expected : "id=5"
-// Result : {"id" : "5"}
-bool setColumn(string s, map<string, string> &m)
-{
-    vector<string> ss = Split(s, '=');
-    if(ss.size()!= 2) return false;
-    m.insert(ss[0],ss[1]);
-}
 
-bool isOperator(string s)
-{
-    auto itr = operators.find(s);
-
-    if (itr != operators.end())
-        return itr->second;
-
-    return false;
-}
-
-static const map<string, bool> operators{
-    {"=", true},
-    {"!=", true},
-    {"<", true},
-    {">", true},
-    {"<=", true},
-    {">=", true},
-};
 
 // Expected : ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
 // Return : [id=5, name="walid", number="06123456789", address="Rue,Belfort" ]
@@ -156,29 +119,6 @@ bool validateConditions(vector<string> setters)
     return false;
 }
 
-vector<string> Split(const std::string &s, char delimiter)
-{
-    vector<string> tokens;
-    std::string token;
-    std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, delimiter))
-    {
-        tokens.push_back(token);
-    }
-    return tokens;
-}
-
-int Count(string s, char ch)
-{
-    int count = 0;
-
-    for (int i = 0; (i = s.find(ch, i)) != std::string::npos; i++)
-    {
-        count++;
-    }
-
-    return count;
-}
 vector<string> formatSetters(vector<string> setters)
 {
     // CURRENTLY: ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
@@ -216,4 +156,66 @@ vector<string> formatSetters(vector<string> setters)
     }
 
     return finalFormat;
+}
+
+// Expected : "id=5"
+// Result : {"id" : "5"}
+bool setColumn(string s, map<string, string> &m)
+{
+    vector<string> ss = Split(s, '=');
+    if(ss.size()!= 2) return false;
+    m.insert(ss[0],ss[1]);
+}
+
+bool isOperator(string s)
+{
+    auto itr = operators.find(s);
+
+    if (itr != operators.end())
+        return itr->second;
+
+    return false;
+}
+
+static const map<string, bool> operators{
+    {"=", true},
+    {"!=", true},
+    {"<", true},
+    {">", true},
+    {"<=", true},
+    {">=", true},
+};
+
+vector<string> Split(const std::string &s, char delimiter)
+{
+    vector<string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+// count the number of occurences of the given character in the given word
+int Count(string s, char ch)
+{
+    int count = 0;
+
+    for (int i = 0; (i = s.find(ch, i)) != std::string::npos; i++)
+    {
+        count++;
+    }
+
+    return count;
+}
+
+bool notIncludedIn(string s, vector<string> ss, int size)
+{
+    for (int i = 0; i < size; i++)
+        if (s == ss.at(i))
+            return true;
+
+    return false;
 }

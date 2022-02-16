@@ -3,7 +3,7 @@ using namespace std;
 #include <iostream> 
 #include <fstream> 
 #include "table_file.h"
-#include "error/query_error_exception.h"
+#include "../error/query_error_exception.h"
 
 TableFile::TableFile(): table(""){};
 TableFile::TableFile(std::string _table): table(_table){};
@@ -32,13 +32,17 @@ void TableFile::close(){
     }  
 };
 
-void TableFile::open(){
+ofstream TableFile::open(){
     ofstream file;  
-    file.open (table);  //file open
-    if(file.is_open()){    
-        cout<<"File close successfully."<<endl;  
+    file.open (table); 
+    if(file){    
+        return file;
     }  
     else{  
-        cout<<"Error in file opening"<<endl;  
+        return 0; 
     }  
 };
+
+std::string TableFile::toString(){
+    return this->table;
+}

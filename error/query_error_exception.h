@@ -8,7 +8,7 @@ private:
 
 public:
     QueryErrorException(const std::string &msg) {}
-    std::string getMessage() const {}
+    std::string getMessage() const;
     ~QueryErrorException() {}
 };
 

@@ -10,7 +10,7 @@ using namespace std;
 ContentFile::ContentFile(){};
 
 vector<string> ContentFile::read_record(uint16_t length, uint32_t offset){
-    ifstream file(this->table);
+    ifstream file(this->table+"/"+this->table+".data");
     string line;
     vector<string> myline;
     file.seekg(offset*length, ios::beg); // set the possition of the pointeur
@@ -20,10 +20,13 @@ vector<string> ContentFile::read_record(uint16_t length, uint32_t offset){
 };
 
 void ContentFile::write_record(const vector<uint8_t> &record, uint32_t offset){
-    ofstream file(this->table,ios::app); //open file in mode append
+    ofstream file(this->table+"/"+this->table+".data");
     file.seekp(offset, ios::end); // set the possition of the pointeur to the end of the file
     for (int i=0; i < record.size(); i++){
         file<<record[i]<<endl; //write lines in the file
     }; 
+    ContentFile::close();
 };
+
+
  

@@ -1,5 +1,5 @@
 #include "select_query.h"
-#include "error/query_error_exception.h"
+#include "../error/query_error_exception.h"
 
 using namespace std;
 
@@ -57,28 +57,83 @@ bool has_reached_sql_end(char *sql) {
 }
 
 void SelectQuery::parse(string user_sql) {
+    std::cout << "parse SELECT : SELECT " << user_sql << endl;
     sqlDetails.primaryCommand = "SELECT";
 
     string upperCaseSQL = SqlQuery::parseToUpper(user_sql);
 
     int fromIndex = upperCaseSQL.find("FROM");
-    if (fromIndex=std::string::npos) {
-        cout << "Mauvaise requête" << endl;
+    if (fromIndex==std::string::npos) {
+        cout << "Mauvaise requete" << endl;
         throw(QueryErrorException("Missing FROM"));
     }
+
     string columns = user_sql.substr(0, fromIndex-1);
-    remove(columns.begin(), columns.end(), ' ');
-    // map<string, string> columnsMap;
+    // remove spaces
+    string::iterator end_pos = remove(columns.begin(), columns.end(), ' ');
+    columns.erase(end_pos, columns.end());
+
     // split columns by , loop in and push_back in map
+    table_records tabRecords;
+    stringstream ss(columns);
+    string col;
+    while (getline(ss, col, ',')) {
+        // field_values a = {0,0,0,col};
+        // field_record b = {col,field_types(4),a};
+        tabRecords.fields.push_back({col,field_types(4),{0,0,0,col}});
+    }
+    sqlDetails.tabRecords = tabRecords;
 
+    // get table name
+    int fromEndIndex = fromIndex + 5;
+    int spaceAfterTableIndex = user_sql.find(' ',fromEndIndex);
+    sqlDetails.table = TableFile(user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex));
 
-    sqlDetails.table = TableFile(user_sql.substr(fromIndex+1, user_sql.find(' ',fromIndex)));
-
+    // get conditions
     int whereIndex = upperCaseSQL.find("WHERE");
-    sqlDetails.conditions = user_sql.substr(whereIndex+1);
+    if (whereIndex!=std::string::npos) {
+        sqlDetails.conditions = user_sql.substr(whereIndex+6);
+    }
 
 
+    cout << "---------------" << endl << sqlDetails.toString() << endl << "---------------" << endl;
+    cout << "END parse SELECT" << endl;
 }
-void SelectQuery::check() {}
+
+field_definition *find_field_definition(string field_name, table_definition *table_definition) {
+    for(int i=0; i < table_definition->fields_count; i++){
+        if(table_definition->definitions[i].field_name.compare(field_name) == 0){
+            return &table_definition->definitions[i];
+        }
+    }
+    return NULL;     
+}
+
+bool check_fields_list(table_records fields_list, table_definition table_definition) {
+    for (size_t i = 0; i < fields_list.fields_count; i++)
+    {
+        if(fields_list.fields[i].field_name == "\0"){
+            fields_list.fields[i].field_name = fields_list.fields[i].field_value.text_value;
+        }
+        if(find_field_definition(&fields_list.fields[i].field_name[0], &table_definition)==NULL){
+           return false;
+        }
+    }
+    return true;
+}
+
+void SelectQuery::check() {
+    this->sqlDetails.toString();
+    this->sqlDetails.table.exist();
+    bool check = check_fields_list(this->sqlDetails.tabRecords, this->sqlDetails.tableDef.get_table_definition());
+    if (check != false) {
+    	cout << "Fields not corresponding!";
+        throw(QueryErrorException("Fields not corresponding!"));
+    }
+}
+
+
+
+
 void SelectQuery::execute(){}
 void SelectQuery::expand(){}

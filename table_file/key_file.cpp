@@ -1,12 +1,10 @@
-#ifndef DEF_KEY_FILE
-#define DEF_KEY_FILE
 #include "table_file.h"
  
 #include <iostream>
 #include <string>
 #include "table_file.h"
  
-class Key_file : public TableFile
+class KeyFile : public TableFile
 {
     public:
         uint64_t get_next_key();

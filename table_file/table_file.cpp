@@ -5,6 +5,7 @@ using namespace std;
 #include "table_file.h"
 #include "error/query_error_exception.h"
 
+TableFile::TableFile(): table(""){};
 TableFile::TableFile(std::string _table): table(_table){};
 
 void TableFile::exist(){

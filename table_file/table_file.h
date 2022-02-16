@@ -9,6 +9,7 @@ class TableFile
     protected:
         std::string table; 
     public:
+        TableFile();
         TableFile(std::string _table);
         void exist();
         void open();

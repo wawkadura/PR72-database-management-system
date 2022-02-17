@@ -16,14 +16,12 @@ namespace fs = experimental::filesystem;
 
 DbInfo::DbInfo(string path) : current_db_path(path) {}
 
-void DbInfo::setDbPath(string path)
-{
-    DbInfo::current_db_path = path;
+void DbInfo::setDbPath(string path){
+    this->current_db_path = path;
 }
 
-std::string DbInfo::getDbPath()
-{
-    return DbInfo::current_db_path;
+std::string DbInfo::getDbPath(){
+    return this->current_db_path;
 }
 
 vector<string> DbInfo::getTables()

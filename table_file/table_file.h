@@ -14,7 +14,7 @@ class TableFile
         TableFile();
         TableFile(std::string _table);
         std::string toString();
-        void exist();
+        void exist(std::string dbPath);
         ofstream open();
         void close();
       

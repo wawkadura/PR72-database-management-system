@@ -27,6 +27,13 @@ struct table_definition
 {
     int fields_count;
     std::vector<field_definition> definitions;
+    
+    string toString(){
+        string field_names;
+        for (field_definition name : definitions)
+            field_names += name.field_name + " ";
+        return field_names;
+    }
 };
 
 struct field_values
@@ -48,6 +55,12 @@ struct table_records
 {
     int fields_count;
     std::vector<field_record> fields;
+    string toString(){
+        string field_names;
+        for (field_record rec : fields)
+            field_names += rec.field_name + " ";
+        return field_names;
+    }
 };
 
 struct index_entry

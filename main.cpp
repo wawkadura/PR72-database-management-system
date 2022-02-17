@@ -7,7 +7,7 @@
 int main()
 {
     DbInfo db("db");
-    cout << "-- Welcome to ooooouuuu database management system -- ";
+    cout << "-- Welcome to ooooouuuu database management system -- " << endl;
     bool start = true;
     string input = "";
     while (1)

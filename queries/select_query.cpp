@@ -88,6 +88,7 @@ void SelectQuery::parse(string user_sql) {
     int fromEndIndex = fromIndex + 5;
     int spaceAfterTableIndex = user_sql.find(' ',fromEndIndex);
     sqlDetails.table = TableFile(user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex));
+    sqlDetails.tableDef = DefinitionFile(user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex));
 
     // get conditions
     int whereIndex = upperCaseSQL.find("WHERE");
@@ -101,21 +102,22 @@ void SelectQuery::parse(string user_sql) {
 }
 
 field_definition *find_field_definition(string field_name, table_definition *table_definition) {
-    for(int i=0; i < table_definition->fields_count; i++){
-        if(table_definition->definitions[i].field_name.compare(field_name) == 0){
-            return &table_definition->definitions[i];
+    for( field_definition &field : table_definition->definitions ){
+        if(field.field_name.compare(field_name) == 0){
+            return &field;
         }
     }
     return NULL;     
 }
 
 bool check_fields_list(table_records fields_list, table_definition table_definition) {
-    for (size_t i = 0; i < fields_list.fields_count; i++)
+    cout << "checking fields :" << fields_list.toString() << " in " << table_definition.toString() << endl;
+    for (field_record rec : fields_list.fields)
     {
-        if(fields_list.fields[i].field_name == "\0"){
-            fields_list.fields[i].field_name = fields_list.fields[i].field_value.text_value;
+        if(rec.field_name == "\0"){
+            rec.field_name = rec.field_value.text_value;
         }
-        if(find_field_definition(&fields_list.fields[i].field_name[0], &table_definition)==NULL){
+        if(find_field_definition(&rec.field_name[0], &table_definition)==NULL){
            return false;
         }
     }
@@ -124,12 +126,18 @@ bool check_fields_list(table_records fields_list, table_definition table_definit
 
 void SelectQuery::check() {
     this->sqlDetails.toString();
-    this->sqlDetails.table.exist();
-    bool check = check_fields_list(this->sqlDetails.tabRecords, this->sqlDetails.tableDef.get_table_definition());
-    if (check != false) {
-    	cout << "Fields not corresponding!";
+    this->sqlDetails.table.exist(this->db.getDbPath());
+    bool check = check_fields_list(
+        this->sqlDetails.tabRecords, 
+        this->sqlDetails.tableDef.get_table_definition(this->db.getDbPath())
+    );
+    if (check == false) {
+    	cout << "Fields not corresponding!" << endl;
         throw(QueryErrorException("Fields not corresponding!"));
     }
+    else
+        cout << "Fields corresponding!" << endl;
+
 }
 
 

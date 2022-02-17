@@ -6,28 +6,32 @@
 #include <fstream>
 
 DefinitionFile::DefinitionFile(){};
+DefinitionFile::DefinitionFile(string TableDef): TableFile(TableDef){};
 
-table_definition DefinitionFile::get_table_definition(){
+table_definition DefinitionFile::get_table_definition(string dbPath){
     string lign;
     table_definition tableDef;
 
-    ifstream file(this->table);
+    string TableDefPath =  dbPath + "/" + this->table + "/" + this->table + ".def";
+    cout << TableDefPath << endl;
+    ifstream file(TableDefPath);
     if (file.is_open()) {
-        int field_count = 0;
+        // int field_count = 0;
         string field_name;
         string field_type;
         while (getline(file, lign)) {
             istringstream ss(lign);
             ss >> field_name;
             ss >> field_type;
-            tableDef.definitions[field_count].field_name = field_name;
-            tableDef.definitions[field_count].field_type = static_cast<field_types>(stoi(field_type));
-            field_count++;
+            tableDef.definitions.push_back({field_name, static_cast<field_types>(stoi(field_type))});
+            // tableDef.definitions[field_count].field_type = static_cast<field_types>(stoi(field_type));
+            // field_count++;
         }
         file.close();
     }
     else
         cout << "Table definition not opened";
+    cout << "table def :" << tableDef.toString() << endl;
     return tableDef;
 }; 
 

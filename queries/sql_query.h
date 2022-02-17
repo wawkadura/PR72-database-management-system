@@ -36,10 +36,8 @@ struct SQLDETAILS {   // Declare SQLDETAILS struct type
 class SqlQuery {
 private:
 	// std::string query;
-    
-    DbInfo db;
 protected: 
-    
+    DbInfo db;
     SQLDETAILS sqlDetails;
 public:
 

@@ -174,7 +174,7 @@ UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery(db)
 
 void UpdateQuery::check()
 {
-    this->sqlDetails.table.exist();
+    this->sqlDetails.table.exist(this->db.getDbPath());
 }
 void UpdateQuery::execute() {
 

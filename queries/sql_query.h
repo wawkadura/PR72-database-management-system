@@ -6,8 +6,8 @@
 #include <sstream>
 
 #include "../db_info.h"
-#include "table_file.cpp"
-#include "definition_file.cpp"
+#include "../table_file/table_file.cpp"
+#include "../table_file/definition_file.cpp"
 #include "sql_row.h"
 #include "../utils.h"
 #include <map>

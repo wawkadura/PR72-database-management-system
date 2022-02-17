@@ -34,12 +34,13 @@ void TableFile::close(){
 
 ofstream TableFile::open(){
     ofstream file;  
+    ofstream empty;
     file.open (table); 
     if(file){    
         return file;
     }  
     else{  
-        return 0; 
+        return empty; 
     }  
 };
 

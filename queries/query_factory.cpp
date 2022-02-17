@@ -34,6 +34,7 @@ Command QueryFactory::resolveCommand (std::string input)
 
 SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
 {
+    // TODO: fix erreur de segmentation 
     SqlQuery* query = NULL;
 
     // get first command

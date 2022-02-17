@@ -168,7 +168,7 @@ void UpdateQuery::parse(string user_sql)
         throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
 }
 UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery(db)
-{
+{   
     UpdateQuery::parse(query);
 }
 

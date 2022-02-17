@@ -9,11 +9,12 @@ int main()
     DbInfo db("db");
     cout << "-- Welcome to ooooouuuu database management system -- " << endl;
     bool start = true;
-    string input = "";
     while (1)
     {
         bool error = false;
         string errorMessage = "";
+        string input = "";
+
         if (start)
         {
             cout << "Here are all the tables available :  " << endl;
@@ -26,6 +27,7 @@ int main()
         }
         cout << "please enter a sql query (or tap exit) :" << endl;
         cin >> input; // get user input from the keyboard
+
         if (input == "exit")
             break;
         try

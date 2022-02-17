@@ -80,8 +80,8 @@ bool validateSetters(vector<string> setters, map<string, string> &mapper)
     return true;
 }
 
-// // table SET (setters >= 1) WHERE (conditions >=1)
-// // [table, SET, setter1, ',' , setter2,  WHERE, condition1, and/or, condition2,  ; ]
+// Expected : table SET (setters >= 1) WHERE (conditions >=1)
+//            [table, SET, setter1, ',' , setter2,  WHERE, condition1, and/or, condition2,  ; ]
 void UpdateQuery::parse(string user_sql)
 {
     sqlDetails.primaryCommand = "UPDATE";
@@ -89,9 +89,9 @@ void UpdateQuery::parse(string user_sql)
     string where = "WHERE";
     string end = ";";
     vector<string> options = {set, where, end};
-
     vector<string> words;
     istringstream iss(user_sql);
+
     do
     {
         string word;
@@ -105,17 +105,24 @@ void UpdateQuery::parse(string user_sql)
         throw(QueryErrorException("Syntaxe error : invalid query, one or more arguments are missing"));
     }
 
-    // Check SET
     int position = 0;
+
+    // Check the table name
+    if (position >= words.size() || includedIn(toUpper(words[position]), options))
+        throw(QueryErrorException("missing table name"));
+
+    sqlDetails.table = TableFile(words[position]);
+    
+    // Check SET
     if (position >= words.size() || toUpper(words[++position]) != set)
         throw(QueryErrorException("missing SET"));
 
-    // // Check Setters
-    vector<string> setters;
+    // Check Setters
 
+    vector<string> setters;
     for (int i = ++position; i < words.size(); i++)
     {
-        if (!includedIn(toUpper(words[i]), options, 3))
+        if (!includedIn(toUpper(words[i]), options))
         {
             setters.push_back(words[i]);
         }
@@ -138,18 +145,16 @@ void UpdateQuery::parse(string user_sql)
 
     // Check conditions
     vector<string> conditions;
-    // cout << "===== DEBUG ========" << endl;
-
     for (int i = ++position; i < words.size(); i++)
     {
         // cout << "current word: " << words[i] << endl;
-        if (!includedIn(toUpper(words[i]), options, 3))
+        if (!includedIn(toUpper(words[i]), options))
         {
             conditions.push_back(words[i]);
         }
         else
         {
-            cout << "position: " << position << " i : "<< i<<endl;
+            cout << "position: " << position << " i : " << i << endl;
             position = i;
             break;
         }
@@ -157,10 +162,6 @@ void UpdateQuery::parse(string user_sql)
 
     if (!validateConditions(conditions))
         throw(QueryErrorException("error in where conditions syntax"));
-
-    // cout << "current word: " << words[position] << endl;
-
-    // cout << "==================" << endl;
 
     // Check for the ';'
     if (position >= words.size() || count(words[position], ';') == 0)
@@ -171,5 +172,10 @@ UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery(db)
     UpdateQuery::parse(query);
 }
 
-void UpdateQuery::check() {}
-void UpdateQuery::execute() {}
+void UpdateQuery::check()
+{
+    this->sqlDetails.table.exist();
+}
+void UpdateQuery::execute() {
+
+}

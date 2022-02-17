@@ -7,7 +7,7 @@
 int main()
 {
     DbInfo db("e");
-    std::string query = "select     test, testtl, smeo, stev from twerlik";
+    std::string query = "select     test, testtl, smeo, stev from table1";
     QueryFactory factory;
     SqlQuery* sq = factory.generate_query(query, db);
     sq->check();

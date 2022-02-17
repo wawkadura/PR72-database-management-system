@@ -53,8 +53,13 @@ int main()
             IsCorrect : false,
         },
         {
+            title : "without where clause",
+            query : "UPDATE table1 SET  name=walid ;",
+            IsCorrect : false,
+        },
+        {
             title : "2 + setters",
-            query : "UPDATE table1 SET  name=\"walid\",value=20,age=3 WHERE id=1;",
+            query : "UPDATE table1 SET  name=\"walid\",value=20, age=3 WHERE id=1;",
             IsCorrect : true,
         },
     };

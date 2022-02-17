@@ -57,9 +57,9 @@ struct index_entry
 };
 
 // check if a string is included in the given vector<string>
-bool includedIn(string s, vector<string> ss, int size)
+bool includedIn(string s, vector<string> ss)
 {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < ss.size(); i++)
         if (s == ss.at(i))
             return true;
 

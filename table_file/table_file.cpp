@@ -11,9 +11,12 @@ TableFile::TableFile(std::string _table): table(_table){};
 void TableFile::exist(){
 
     struct stat buffer;
+    // TODO: add the database instead of db
+    string path = "db/"+table+"/"+table+".def";
+    
     //check if directory exit
-    if (stat(table.c_str(), &buffer) != 0) {
-    	cout << "Directory doesn't exist!";
+    if (stat(path.c_str(), &buffer) != 0) {
+    	// cout << "Directory doesn't exist! ";
         throw(QueryErrorException("Directory doesn't exist!"));
     } else {
     	cout << "Directory exists!";

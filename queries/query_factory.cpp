@@ -59,9 +59,9 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
     // case INSERT:
     //     query = new InsertQuery(sql, db);
     //     break;
-    // case UPDATE:
-    //     query = new UpdateQuery(sql, db);
-    //     break;
+    case UPDATE:
+        query = new UpdateQuery(sql, db);
+        break;
     // case DELETE:
     //     query = new DeleteQuery(sql, db);
     //     break;

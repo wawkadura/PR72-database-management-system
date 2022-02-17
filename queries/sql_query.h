@@ -19,7 +19,7 @@ struct SQLDETAILS {   // Declare SQLDETAILS struct type
         table_records tabRecords;
         TableFile table;
         DefinitionFile tableDef;
-        map<string, string> setColumnsMapper;
+        std::map<std::string, std::string> setColumnsMapper;
         std::string conditions;
         std::string toString(){
             std::string str = "primary command:" + primaryCommand 
@@ -49,6 +49,7 @@ public:
     virtual void parse(std::string user_sql)=0;
     virtual void check()=0;
     virtual void execute()=0;
+    SQLDETAILS getSqlDetails();
     std::string parseToUpper(std::string text);
     // std::vector<SqlRow> where();
     // SQLDETAILS getSqlDetails();

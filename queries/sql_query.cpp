@@ -4,5 +4,8 @@
 
 SqlQuery::SqlQuery(DbInfo _db): db(_db){};
 
+SQLDETAILS SqlQuery::getSqlDetails(){
+    return SqlQuery::sqlDetails;
+}
 
 // std::vector<SqlRow> SqlQuery::where(){};

@@ -1,8 +1,9 @@
 #include <iostream>
-#include "queries/sql_query.cpp"
-#include "queries/select_query.cpp"
 #include "db_info.cpp"
 #include "queries/query_factory.cpp"
+#include "utils.h"
+#include <map>
+
 int main()
 {
     DbInfo db("e");

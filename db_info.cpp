@@ -1,5 +1,5 @@
 #include "db_info.h"
-#include <experimental/filesystem>
+#include <filesystem>
 #include <filesystem>
 #include <iostream>
 
@@ -12,7 +12,7 @@ using std::endl;
 using std::vector;
 
 using namespace std;
-namespace fs = experimental::filesystem;
+namespace fs = filesystem;
 
 DbInfo::DbInfo(string path) : current_db_path(path) {}
 

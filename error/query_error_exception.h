@@ -7,7 +7,7 @@ private:
     std::string msg_;
 
 public:
-    QueryErrorException(const std::string &msg) {}
+    QueryErrorException(const std::string &msg);
     std::string getMessage() const;
     ~QueryErrorException() {}
 };

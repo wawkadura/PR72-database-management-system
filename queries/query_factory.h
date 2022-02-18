@@ -5,10 +5,8 @@
 #include <algorithm>
 
 #include "sql_query.h"
-#include "select_query.h"
-#include "insert_query.h"
-#include "update_query/update_query.h"
-#include "delete_query.h"
+#include "select_query.cpp"
+#include "update_query/update_query.cpp"
 #include "../db_info.h"
 
 using namespace std;

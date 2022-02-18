@@ -8,15 +8,18 @@ using namespace std;
 TableFile::TableFile(): table(""){};
 TableFile::TableFile(std::string _table): table(_table){};
 
-void TableFile::exist(){
-
+void TableFile::exist(std::string dbPath){
+    std::string tablePath = dbPath + "/" + table;
     struct stat buffer;
+    // TODO: add the database instead of db
+    string path = "db/"+table+"/"+table+".def";
+    
     //check if directory exit
-    if (stat(table.c_str(), &buffer) != 0) {
-    	cout << "Directory doesn't exist!";
+    if (stat(tablePath.c_str(), &buffer) != 0) {
+    	cout << "Directory " << table << " doesn't exist!" << endl;
         throw(QueryErrorException("Directory doesn't exist!"));
     } else {
-    	cout << "Directory exists!";
+    	cout << "Directory " << table << " exists!" << endl;
     }
 };   
 
@@ -34,12 +37,13 @@ void TableFile::close(){
 
 ofstream TableFile::open(){
     ofstream file;  
+    ofstream empty;
     file.open (table); 
     if(file){    
         return file;
     }  
     else{  
-        return 0; 
+        return empty; 
     }  
 };
 

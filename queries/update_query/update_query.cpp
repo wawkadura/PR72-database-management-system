@@ -1,117 +1,15 @@
 #include "update_query.h"
-#include <sstream>
 #include <string>
 #include <vector>
-#include "error/query_error_exception.h"
+#include "../sql_query.cpp"
+#include <iostream>
+#include "../../utils.h"
+#include "../../error/query_error_exception.cpp"
 #include <map>
 
 using namespace std;
 
-UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery::SqlQuery(db)
-{
-    UpdateQuery::parse(query);
-}
-
-// table SET (setters >= 1) WHERE (conditions >=1)
-// [table, SET, setter1, ',' , setter2,  WHERE, condition1, and/or, condition2,  ; ]
-void UpdateQuery::parse(string user_sql)
-{
-    sqlDetails.primaryCommand = "UPDATE";
-    string set = "SET";
-    string where = "WHERE";
-    string end = ";";
-    vector<string> options = {set, where, end};
-
-    vector<string> words;
-    istringstream iss(user_sql);
-    do
-    {
-        string word;
-        iss >> word;
-        words.push_back(word);
-    } while (iss);
-
-    // Check the minimum requirement of words
-    if (words.size() < 5)
-    {
-        throw(QueryErrorException("Syntaxe error : make sure to put spaces between arguments"));
-    }
-
-    // Check SET
-    int position = 0;
-    if (position >= words.size() || parseToUpper(words[++position]) != set)
-        throw(QueryErrorException("missing SET"));
-
-    // Check Setters
-    vector<string> setters;
-
-    for (int i = ++position; i < words.size(); i++)
-    {
-        if (notIncludedIn(parseToUpper(words[i]), options, 3))
-        {
-            setters.push_back(words[i]);
-        }
-        else
-        {
-            position = i;
-            break;
-        }
-    }
-
-    if (setters.size() < 1)
-        throw(QueryErrorException("missing setters"));
-
-    if (!validateSetters(setters, sqlDetails.setColumnsMapper))
-        throw(QueryErrorException("error in setters syntax"));
-
-    // Check WHERE
-    if (position >= words.size() || parseToUpper(words[position]) != where)
-        throw(QueryErrorException("missing where clause"));
-
-    // Check conditions
-    vector<string> conditions;
-
-    for (int i = ++position; i < words.size(); i++)
-    {
-        if (notIncludedIn(parseToUpper(words[i]), options, 3))
-        {
-            conditions.push_back(words[i]);
-        }
-        else
-        {
-            position = i;
-            break;
-        }
-    }
-
-    if (!validateConditions(conditions))
-        throw(QueryErrorException("error in where conditions syntax"));
-
-    // Check for the ';'
-    if (position >= words.size() || parseToUpper(words[position]) != end)
-        throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
-}
-void UpdateQuery::check() {}
-void UpdateQuery::execute() {}
-
-
-// SET id = 5 , name="walid", number=06123456789,address="Belfort"
-
-bool validateSetters(vector<string> setters, map<string, string> &mapper)
-{
-    vector<string> formatedSetters = formatSetters(setters);
-    for (int i = 0; i < formatedSetters.size(); i++)
-    {
-        bool ok = setColumn(formatedSetters[i], mapper);
-        if (!ok)
-            return false;
-    }
-    return true;
-}
-
-
-
-// TODO: implimente body
+// // TODO: implimente body
 bool validateConditions(vector<string> setters)
 {
     return true;
@@ -136,7 +34,7 @@ vector<string> formatSetters(vector<string> setters)
     string s;
     for (int i = 0; i < splittedWords.size(); i++)
     {
-        if (Count(splittedWords[i], '"') == 1)
+        if (count(splittedWords[i], '"') == 1)
         {
             if (s != "")
             {
@@ -163,60 +61,121 @@ vector<string> formatSetters(vector<string> setters)
 bool setColumn(string s, map<string, string> &m)
 {
     vector<string> ss = Split(s, '=');
-    if(ss.size()!= 2) return false;
-    m.insert(ss[0],ss[1]);
+    if (ss.size() != 2)
+        return false;
+    m.insert({ss[0], ss[1]});
+    return true;
 }
 
-// TODO : transfer to Utils
-bool isOperator(string s)
+// SET id = 5 , name="walid", number=06123456789,address="Belfort"
+bool validateSetters(vector<string> setters, map<string, string> &mapper)
 {
-    auto itr = operators.find(s);
-
-    if (itr != operators.end())
-        return itr->second;
-
-    return false;
-}
-
-static const map<string, bool> operators{
-    {"=", true},
-    {"!=", true},
-    {"<", true},
-    {">", true},
-    {"<=", true},
-    {">=", true},
-};
-
-vector<string> Split(const std::string &s, char delimiter)
-{
-    vector<string> tokens;
-    std::string token;
-    std::istringstream tokenStream(s);
-    while (std::getline(tokenStream, token, delimiter))
+    vector<string> formatedSetters = formatSetters(setters);
+    for (int i = 0; i < formatedSetters.size(); i++)
     {
-        tokens.push_back(token);
+        bool ok = setColumn(formatedSetters[i], mapper);
+        if (!ok)
+            return false;
     }
-    return tokens;
+    return true;
 }
 
-// count the number of occurences of the given character in the given word
-int Count(string s, char ch)
+// Expected : table SET (setters >= 1) WHERE (conditions >=1)
+//            [table, SET, setter1, ',' , setter2,  WHERE, condition1, and/or, condition2,  ; ]
+void UpdateQuery::parse(string user_sql)
 {
-    int count = 0;
+    sqlDetails.primaryCommand = "UPDATE";
+    string set = "SET";
+    string where = "WHERE";
+    string end = ";";
+    vector<string> options = {set, where, end};
+    vector<string> words;
+    istringstream iss(user_sql);
 
-    for (int i = 0; (i = s.find(ch, i)) != std::string::npos; i++)
+    do
     {
-        count++;
+        string word;
+        iss >> word;
+        words.push_back(word);
+    } while (iss);
+
+    // Check the minimum requirement of words
+    if (words.size() < 5)
+    {
+        throw(QueryErrorException("Syntaxe error : invalid query, one or more arguments are missing"));
     }
 
-    return count;
+    int position = 0;
+
+    // Check the table name
+    if (position >= words.size() || includedIn(toUpper(words[position]), options))
+        throw(QueryErrorException("missing table name"));
+
+    sqlDetails.table = TableFile(words[position]);
+    
+    // Check SET
+    if (position >= words.size() || toUpper(words[++position]) != set)
+        throw(QueryErrorException("missing SET"));
+
+    // Check Setters
+
+    vector<string> setters;
+    for (int i = ++position; i < words.size(); i++)
+    {
+        if (!includedIn(toUpper(words[i]), options))
+        {
+            setters.push_back(words[i]);
+        }
+        else
+        {
+            position = i;
+            break;
+        }
+    }
+
+    if (setters.size() < 1)
+        throw(QueryErrorException("missing setters"));
+
+    if (!validateSetters(setters, sqlDetails.setColumnsMapper))
+        throw(QueryErrorException("error in setters syntax"));
+
+    // Check WHERE
+    if (position >= words.size() || toUpper(words[position]) != where)
+        throw(QueryErrorException("missing where clause"));
+
+    // Check conditions
+    vector<string> conditions;
+    for (int i = ++position; i < words.size(); i++)
+    {
+        // cout << "current word: " << words[i] << endl;
+        if (!includedIn(toUpper(words[i]), options))
+        {
+            conditions.push_back(words[i]);
+        }
+        else
+        {
+            cout << "position: " << position << " i : " << i << endl;
+            position = i;
+            break;
+        }
+    }
+
+    if (!validateConditions(conditions))
+        throw(QueryErrorException("error in where conditions syntax"));
+
+    // Check for the ';'
+    if (position >= words.size() || count(words[position], ';') == 0)
+        throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
+}
+UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery(db)
+{   
+    UpdateQuery::parse(query);
 }
 
-bool notIncludedIn(string s, vector<string> ss, int size)
+void UpdateQuery::check()
 {
-    for (int i = 0; i < size; i++)
-        if (s == ss.at(i))
-            return true;
+    this->sqlDetails.table.exist(this->db.getDbPath());
+}
+void UpdateQuery::execute() {
 
-    return false;
 }

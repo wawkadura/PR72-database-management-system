@@ -17,23 +17,8 @@ enum field_types
     TYPE_TEXT
 };
 
-<<<<<<< HEAD
-typedef enum {
-    QUERY_NONE,
-    QUERY_CREATE_TABLE,
-    QUERY_DROP_TABLE,
-    QUERY_SELECT,
-    QUERY_UPDATE,
-    QUERY_DELETE,
-    QUERY_INSERT,
-    QUERY_DROP_DB,
-} query_type_t;
-
-struct field_definition {
-=======
 struct field_definition
 {
->>>>>>> 799e075e9c23e198443bf09e5d78a5c4e5f1a8fc
     std::string field_name;
     field_types field_type;
 };
@@ -78,31 +63,6 @@ struct table_records
     }
 };
 
-<<<<<<< HEAD
-struct insert_query {
-    const char *table_name;
-    std::string field_name;
-    field_types field_type;
-    field_values field_value;
-};
-
-struct insert_records {
-    int fields_count;
-    std::vector<insert_query> fields;
-};
-
-struct index_entry {
-    int field_type_t ;
-    std::vector<field_definition> field_type ;
-};
-
-struct index_records {
-    int fields_count;
-    std::vector<field_record> fields;
-};
-
-#endif
-=======
 struct index_entry
 {
     int field_type_t;
@@ -176,4 +136,3 @@ std::string toUpper(std::string text){
 
 #endif
 
->>>>>>> 799e075e9c23e198443bf09e5d78a5c4e5f1a8fc

@@ -1,13 +1,11 @@
 #include "insert_query.h"
 #include "../error/query_error_exception.h"
-#include "key_file.h"
+#include "../table_file/key_file.h"
 #include "sql_query.h"
 
 using namespace std;
 
-InsertQuery::InsertQuery(string query, DbInfo db):SqlQuery(db){
-    InsertQuery::parse(query);
-}
+InsertQuery::InsertQuery(string query, DbInfo db):SqlQuery(db){}
 
 char *get_sep_space(char *sql) {
     while(isspace(*sql)) {
@@ -16,6 +14,11 @@ char *get_sep_space(char *sql) {
     return sql;
 }
 
+/**
+ * @brief Get the first occurrence of a character after spaces and one time the parameter "c".
+ * @example "  ,  id WHERE data = 2 , id = 1",',' -> pointer to "id WHERE data = 2 , id = 1"
+ * @example "  a  data , id",'a' -> pointer to "data , id"
+ */
 char *get_sep_space_and_char(char *sql, char c) {
     sql = get_sep_space(sql);
     //check if the character is present
@@ -24,11 +27,13 @@ char *get_sep_space_and_char(char *sql, char c) {
     }else{
         return NULL;
     }
-
     sql=get_sep_space(sql);
     return sql;
 }
-
+/**
+ * @brief Check if it is the end of the query by looking if there are only spaces left.
+ * @param sql Pointer to a position in the sql query.
+ */
 bool has_reached_sql_end(char *sql) {
     sql=get_sep_space(sql);
     if (*sql == '\0' || *sql == ';') {
@@ -38,6 +43,10 @@ bool has_reached_sql_end(char *sql) {
     }
 }
 
+/**
+ * @brief Get the field name object.
+ * @example "'my name is' text)" -> " text" and field_name = "my name is"
+ */
 char *get_keyword(char *sql, char *keyword) {
     bool valid = true;
     sql=get_sep_space(sql);
@@ -70,7 +79,7 @@ char *get_field_name(char *sql, char *field_name) {
             sql++;
         }
         if(*sql == '\0') {
-            throw(QueryErrorException("error2"));;
+            throw(QueryErrorException("error missin ''"));;
         }
         field_name[i-1] = '\0';
         return ++sql;
@@ -88,11 +97,15 @@ char *get_field_name(char *sql, char *field_name) {
         return sql;
     }
 }
-
-char *parse_fields_or_values_list(char *sql, table_record_t *result) {
-    
-    char field[TEXT_LENGTH];
-
+/**
+ * @brief Get a list of value or fiels names.
+ * @example " id, name, age WHERE id=2;" -> "WHERE id=2;" and result->fields_count = 3 result->fields[0] = TYPE_TEXT,"id" result->fields[1] = TYPE_TEXT,"name" result->fields[2] = TYPE_TEXT,"age"
+ * @example "12, Hey, 2.5 WHERE id=2;" -> "WHERE id=2;" and result->fields_count = 3 result->fields[0] = TYPE_INTEGER,"12" result->fields[1] = TYPE_TEXT,"Hey" result->fields[2] = TYPE_FLOAT,"2.5"
+ * @param sql Pointer to a position in the sql query.
+ * @param result a pointer to the list of values or fields names in an organised structure to modificate.
+ */  
+char *parse_fields_or_values_list(char *sql,  insert_records *result) {
+    char *field;
     bool continue_parsing = true;
     bool parenthesis_opened = false;
 
@@ -111,14 +124,11 @@ char *parse_fields_or_values_list(char *sql, table_record_t *result) {
         }else{
             sql= get_field_name(sql, field);
 
-            if(sql == NULL){
-                return NULL;
-            }
-
             //check the type of the field and add it to the list
 
             result->fields[result->fields_count].field_type = TYPE_UNKNOWN;
-            strcpy(result->fields[result->fields_count].field_value.text_value, field);
+            char* values = const_cast<char*>((result->fields[result->fields_count].field_value.text_value).c_str());//convert string into char *
+            strcpy(values, field);
 
             result->fields_count++;
 
@@ -133,9 +143,6 @@ char *parse_fields_or_values_list(char *sql, table_record_t *result) {
         
     }
 
-    if(sql == NULL){
-        return NULL;
-    }
     //if there is a parenthesis, the list of values or fields names must end with a parenthesis
     if(get_sep_space_and_char(sql, ')') != NULL && parenthesis_opened) {
         sql = get_sep_space_and_char(sql, ')');
@@ -143,46 +150,45 @@ char *parse_fields_or_values_list(char *sql, table_record_t *result) {
     }else if (!parenthesis_opened) {
         return sql;
     }else if (parenthesis_opened) {
-        printf("Error: Expected ')'\n");
-        return NULL;
+        throw(QueryErrorException("Error: Expected ')'"));;
     }else{
-        printf("Error: Unexpected ')'\n");
-        return NULL;
+        throw(QueryErrorException("Error: Unexpected ')"));;
     }
 }
 
-void InsertQuery::parse(char *user_sql) {
+/**
+ * @brief function that extract the data from a sql insert query.
+ * @param sql Pointer to the sql insert query without INSERT.
+ * @param result Pointer to the data structure to modificate.
+ */
+query_result *InsertQuery::parse(string user_sql, query_result *result) {
 
-     //intialize the result
-    result->query_content.insert_query.fields_values.fields_count = 0;
-    result->query_content.insert_query.fields_names.fields_count = 0;
-
-    result->query_type = QUERY_INSERT;
-    if (has_reached_sql_end(user_sql)) {
-        throw(QueryErrorException("Directory doesn't exist!"));;
+    char* the_sql = const_cast<char*>((user_sql).c_str());//convert string into char *
+    if (has_reached_sql_end(the_sql)) {
+        throw(QueryErrorException("Query not well made end"));;
     }
-    user_sql = get_keyword(user_sql, "into");
-    if(user_sql == NULL){
+    the_sql = get_keyword(the_sql, "into");
+    if(the_sql == NULL){
         throw(QueryErrorException("Error: missing INTO keyword"));;
     }
-    if (has_reached_sql_end(user_sql)) {
-        throw(QueryErrorException("Directory doesn't exist!"));;
+    if (has_reached_sql_end(the_sql)) {
+        throw(QueryErrorException("Query not well made end"));;
     }
-    user_sql= get_field_name(user_sql, result->query_content.insert_query.table_name);
-    if(user_sql == NULL){
-        throw(QueryErrorException("Directory doesn't exist!"));;
+    the_sql= get_field_name(the_sql, result->query_content.insert_query.table_name);
+    if(the_sql == NULL){
+        throw(QueryErrorException("Error in feld name"));;
     }
-    if (has_reached_sql_end(user_sql)) {
-        throw(QueryErrorException("Directory doesn't exist!"));;
+    if (has_reached_sql_end(the_sql)) {
+        throw(QueryErrorException("Query not well made end"));;
     }
     
-    if(get_keyword(user_sql, "values") == NULL){
-        user_sql = parse_fields_or_values_list(user_sql, &result->query_content.insert_query.fields_names);
-        if(user_sql == NULL){
-            throw(QueryErrorException("Directory doesn't exist!"));;
+    if(get_keyword(the_sql, "values") == NULL){
+        the_sql = parse_fields_or_values_list(the_sql, &result->query_content.insert_query.fields_names);
+        if(the_sql == NULL){
+            throw(QueryErrorException("Missing 'values' required"));;
         }  
-        if (has_reached_sql_end(user_sql)) {
-            throw(QueryErrorException("Directory doesn't exist!"));;
+        if (has_reached_sql_end(the_sql)) {
+            throw(QueryErrorException("Query not well made end"));;
         }
     }else{
 
@@ -191,42 +197,50 @@ void InsertQuery::parse(char *user_sql) {
         strcpy(result->query_content.insert_query.fields_names.fields[0].field_value.text_value, "*");
 
     }
-    user_sql = get_keyword(user_sql, "values");
-    if(user_sql == NULL){
-        throw(QueryErrorException("Error: missing VALUES keyword"));;
+    the_sql = get_keyword(the_sql, "values");
+    if(the_sql == NULL){
+        throw(QueryErrorException("Error: missing VALUES keyword"));
     }
-    if (has_reached_sql_end(user_sql)) {
-        throw(QueryErrorException("error19"));;
+    if (has_reached_sql_end(the_sql)) {
+        throw(QueryErrorException("Query not well made end"));
     }
-    user_sql = parse_fields_or_values_list(user_sql, &result->query_content.insert_query.fields_values);
-    if(user_sql == NULL){
-        throw(QueryErrorException("list value"));;
+    the_sql = parse_fields_or_values_list(the_sql, &result->query_content.insert_query.fields_values);
+    if(the_sql == NULL){
+        throw(QueryErrorException("list value"));
     }
-    if (has_reached_sql_end(user_sql)) {
+    if (has_reached_sql_end(the_sql)) {
         return result;
     }else{
-        throw(QueryErrorException("errr20"));;
+        throw(QueryErrorException("Query not well made end"));
     }
 };
-    
+
 
 void InsertQuery::check() {}
-void InsertQuery::execute(){
-    // //manage key file 
+
+void InsertQuery::execute(insert_query *query) {
+    
+    // //key file(primary key )
     // for (int i = 0; i < query->fields_values.fields_count; i++)
     // {   
     //     if(query->fields_values.fields[i].field_type == TYPE_PRIMARY_KEY){
-    //         unsigned long long next_key = get_next_key(query->table_name);
+    //         unsigned long long next_key = this->sqlDetails.key.get_next_key(query->table_name);
     //         if( query->fields_values.fields[i].field_value.primary_key_value > next_key){
-    //             update_key(query->table_name, query->fields_values.fields[i].field_value.primary_key_value);
+    //             this->sqlDetails.key.update_key(query->table_name, query->fields_values.fields[i].field_value.primary_key_value);
     //         } else {
     //             query->fields_values.fields[i].field_value.primary_key_value = next_key;
-    //             update_key(query->table_name, next_key++);
+    //             this->sqlDetails.key.update_key(query->table_name, next_key++);
     //         }
     //     }  
     // }
-    // //add value
-    // add_row_to_table(query->table_name, &query->fields_values);
+
+    // //write to content file
+    // table_definition  def = this->sqlDetails.tableDef.get_table_definition();
+    // int sizeIndex = this->index->size();
+    // int sizeContent = this->content->size();
+    // index_entry entry = {true};
+    // Buffer buf = query_to_content(query,def);
+    // this->sqlDetails.index.write_index_entry(entry,sizeIndex);
+    // this->sqlDetails.content.write_record(buf,sizeContent);
+    
 }
-
-

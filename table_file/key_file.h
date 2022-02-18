@@ -11,7 +11,7 @@ class KeyFile : public TableFile
     public:
         KeyFile();
         uint64_t get_next_key(std::string table);
-        void update_key(uint64_t last_value);
+        void update_key(string table,uint64_t last_value);
 };
  
 #endif

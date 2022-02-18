@@ -10,9 +10,7 @@ KeyFile::KeyFile(){};
  * @return the next value of the key if it exists, 0 else
  */
 uint64_t KeyFile::get_next_key(string table){
-
     const char *table_key =table.c_str();
-
     FILE *key = KeyFile::open_key_file(table_key, "rb");
         if (key){
             uint64_t key_value;
@@ -29,11 +27,9 @@ uint64_t KeyFile::get_next_key(string table){
  * if higher than the stored value. The value sent to the function is the last value inserted into the table, so the
  * function must increment it before comparing to the key file content.
  */
-void KeyFile::update_key(uint64_t last_value){
+void KeyFile::update_key(string table,uint64_t last_value){
     ++last_value;
-
     const char *table_key =(this->table).c_str();
-
     uint64_t file_value = get_next_key(table_key);
     FILE *key = KeyFile::open_key_file(table_key, "wb");
     fwrite(file_value > last_value ? &file_value : &last_value, sizeof(unsigned long long), 1, key);

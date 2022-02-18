@@ -8,6 +8,9 @@
 #include "../db_info.h"
 #include "table_file.cpp"
 #include "definition_file.cpp"
+#include "key_file.cpp"
+#include "index_file.cpp"
+#include "content_file.cpp"
 #include "sql_row.h"
 #include "../utils.h"
 #include <map>
@@ -19,6 +22,9 @@ struct SQLDETAILS {   // Declare SQLDETAILS struct type
         table_records tabRecords;
         TableFile table;
         DefinitionFile tableDef;
+        KeyFile key;
+        IndexFile index;
+        ContentFile content;
         map<string, string> setColumnsMapper;
         std::string conditions;
         std::string toString(){

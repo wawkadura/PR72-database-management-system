@@ -11,7 +11,11 @@ class IndexFile : public TableFile
         uint16_t length;
 
     public:
+        IndexFile();
+        IndexFile(std::string tableDef, std::string dbPath);
         void write_index_entry(const index_entry &entry, uint32_t offset);
         index_entry get_index_entry(uint32_t position);
+        map<int,int> getOffsets(bool active);
+        void createFile();
 };
 

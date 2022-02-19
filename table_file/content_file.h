@@ -9,10 +9,14 @@ using namespace std;
  
 class ContentFile : public TableFile // the file class inherits the protected attribute from the parent class
 {   
+    private:
+    
     public :
         ContentFile();
+        ContentFile(std::string tableDef, std::string dbPath);
         vector<std::string> read_record(uint16_t length, uint32_t offset); 
         void write_record(const std::vector<uint8_t> &record, uint32_t offset);   
+        void createFile();
 };
 
 #endif

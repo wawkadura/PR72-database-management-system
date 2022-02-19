@@ -69,6 +69,31 @@ struct index_entry
     std::vector<field_definition> field_type;
 };
 
+// check if field is in table def
+field_definition *find_field_definition(string field_name, table_definition *table_definition) {
+    for( field_definition &field : table_definition->definitions ){
+        if(field.field_name.compare(field_name) == 0){
+            return &field;
+        }
+    }
+    return NULL;     
+}
+
+// check if all the fields exist in table def
+bool checkFields(table_records fields_list, table_definition table_definition) {
+    cout << "checking fields :" << fields_list.toString() << " in " << table_definition.toString() << endl;
+    for (field_record rec : fields_list.fields)
+    {
+        if(rec.field_name == "\0"){
+            rec.field_name = rec.field_value.text_value;
+        }
+        if(find_field_definition(&rec.field_name[0], &table_definition)==NULL){
+           return false;
+        }
+    }
+    return true;
+}
+
 // check if a string is included in the given vector<string>
 bool includedIn(string s, vector<string> ss)
 {
@@ -132,6 +157,51 @@ std::string toUpper(std::string text){
         { return std::toupper(c); }
     );
     return text;
+};
+
+
+table_records mapToRecords(map<string, string> ss)
+{
+    table_records tabRecords;
+    map<string, string>::iterator it;
+    std::vector<field_record> fields;
+
+    for (it = ss.begin(); it != ss.end(); it++)
+    {
+        field_values fv = {text_value : it->second};
+        field_record f = {field_name : it->first, field_value : fv};
+        fields.push_back(f);
+    }
+    tabRecords.fields = fields;
+
+    return tabRecords;
+}
+
+std::string removeChar(std::string s, char c){
+    vector<string> ss = Split(s, c);
+    string newString = "";
+    for(auto var : ss)
+    {
+        newString+=var;
+    }
+
+    return newString;
+}
+
+struct insert_query {
+    const char *table_name;
+    std::string field_name;
+    field_types field_type;
+};
+
+struct insert_records {
+    int fields_count;
+    std::vector<insert_query> fields;
+};
+
+struct query_result {
+    insert_query insert;
+    std::vector<insert_query> query_content;
 };
 
 #endif

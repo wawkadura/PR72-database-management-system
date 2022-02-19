@@ -19,43 +19,6 @@ std::string SqlQuery::parseToUpper(std::string text){
     return text;
 };
 
-/**
- * @brief Get the first occurrence of a non space character in a string.
- * @example "   hello" -> pointer to "hello"
- * 
- * @param sql Pointer to a position in the sql query.
- * @return char* Return the pointer to the first occurrence of a non space character.
- */
-char *get_sep_space(char *sql) {
-    /*if(!isspace(*sql)) {
-        printf("Use less \n");
-    }*/
-    //debug code
-    while(isspace(*sql)) {
-        sql++;
-    }
-    return sql;
-}
-
-/**
- * @brief Check if it is the end of the query by looking if there are only spaces left.
- * 
- * @param sql Pointer to a position in the sql query.
- * @return true If it is the end of the query.
- * @return false If it is not the end of the query.
- */
-bool has_reached_sql_end(char *sql) {
-
-
-    sql=get_sep_space(sql);
-
-    if (*sql == '\0' || *sql == ';') {
-        return true;
-    }else{
-        return false;
-    }
-}
-
 void SelectQuery::parse(string user_sql) {
     std::cout << "parse SELECT : SELECT " << user_sql << endl;
     sqlDetails.primaryCommand = "SELECT";
@@ -87,8 +50,11 @@ void SelectQuery::parse(string user_sql) {
     // get table name
     int fromEndIndex = fromIndex + 5;
     int spaceAfterTableIndex = user_sql.find(' ',fromEndIndex);
-    sqlDetails.table = TableFile(user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex));
-    sqlDetails.tableDef = DefinitionFile(user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex));
+    string tableName = user_sql.substr(fromEndIndex, spaceAfterTableIndex-fromEndIndex);
+    sqlDetails.table = TableFile(tableName, db.getDbPath());
+    sqlDetails.tableDef = DefinitionFile(tableName, db.getDbPath());
+    sqlDetails.contentFile = ContentFile(tableName, db.getDbPath());
+    sqlDetails.indexFile = IndexFile(tableName, db.getDbPath());
 
     // get conditions
     int whereIndex = upperCaseSQL.find("WHERE");
@@ -101,35 +67,13 @@ void SelectQuery::parse(string user_sql) {
     cout << "END parse SELECT" << endl;
 }
 
-field_definition *find_field_definition(string field_name, table_definition *table_definition) {
-    for( field_definition &field : table_definition->definitions ){
-        if(field.field_name.compare(field_name) == 0){
-            return &field;
-        }
-    }
-    return NULL;     
-}
-
-bool check_fields_list(table_records fields_list, table_definition table_definition) {
-    cout << "checking fields :" << fields_list.toString() << " in " << table_definition.toString() << endl;
-    for (field_record rec : fields_list.fields)
-    {
-        if(rec.field_name == "\0"){
-            rec.field_name = rec.field_value.text_value;
-        }
-        if(find_field_definition(&rec.field_name[0], &table_definition)==NULL){
-           return false;
-        }
-    }
-    return true;
-}
 
 void SelectQuery::check() {
     this->sqlDetails.toString();
-    this->sqlDetails.table.exist(this->db.getDbPath());
-    bool check = check_fields_list(
+    this->sqlDetails.table.exist();
+    bool check = checkFields(
         this->sqlDetails.tabRecords, 
-        this->sqlDetails.tableDef.get_table_definition(this->db.getDbPath())
+        this->sqlDetails.tableDef.get_table_definition()
     );
     if (check == false) {
     	cout << "Fields not corresponding!" << endl;
@@ -140,8 +84,48 @@ void SelectQuery::check() {
 
 }
 
+void SelectQuery::expand(){
+    vector<field_record> queryFields = this->sqlDetails.tabRecords.fields;
+    if(queryFields.size()==1 && queryFields[0].field_name=="*"){
+        queryFields.clear();
+        cout<<"ldr";
+        for (field_definition f : this->sqlDetails.tableDef.get_table_definition().definitions)
+            queryFields.push_back({f.field_name, f.field_type, {0,0,0,f.field_name}});
+    }
+    cout << this->sqlDetails.tableDef.toString();
+}
 
 
+void SelectQuery::execute(){
+    expand();
+    map<int, int> activeOffsets = this->sqlDetails.indexFile.getOffsets(true); // first : Offset, second : Length
+    vector<field_definition> tableFields = this->sqlDetails.tableDef.get_table_definition().definitions;
+    vector<field_record> queryFields = this->sqlDetails.tabRecords.fields;
+    map<string,string> map;
+    std::map<string,string>::iterator itr;
+    vector<vector<string>> resultsTable;
 
-void SelectQuery::execute(){}
-void SelectQuery::expand(){}
+    for( field_definition def : tableFields )
+        map.insert({def.field_name, ""});
+    
+
+    int resultIndex = 0;
+
+    for(pair<int,int> i : activeOffsets){
+        vector<string> dataFields = this->sqlDetails.contentFile.read_record(i.second, i.first);
+
+        int idx = 0;
+        for( itr = map.begin(); itr != map.end(); itr++ ) {
+            itr->second = dataFields[idx];
+            idx++;
+        }
+        // add one dimension 
+        resultsTable.push_back({});
+        for( field_record rec : queryFields ) {
+            resultsTable[resultIndex].push_back(map.find(rec.field_name)->second);
+        }
+        resultIndex++;
+    }
+    displayResults(resultsTable, queryFields);
+
+}

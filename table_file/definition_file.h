@@ -10,9 +10,12 @@ class DefinitionFile : public TableFile
           
     public:
         DefinitionFile();
-        DefinitionFile(std::string tableDef);
-        table_definition get_table_definition(std::string dbPath); 
+        DefinitionFile(std::string tableDef, std::string dbPath);
+        table_definition get_table_definition(); 
         void write_table_definition(const table_definition &def);
+        void deleteTableFile();
+        void createFile();
+        
 };
 
 #endif

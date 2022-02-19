@@ -4,14 +4,16 @@
 #include <iostream>
 #include <algorithm>
 
-#include "sql_query.h"
+#include "sql_query.cpp"
 #include "select_query.cpp"
+// #include "create_query/create_table_query.cpp"
+// #include "drop_query/drop_table_query.cpp"
 #include "update_query/update_query.cpp"
-#include "../db_info.h"
+#include "../db_info.cpp"
 
 using namespace std;
 
-enum Command { SELECT, CREATE, INSERT, UPDATE, DELETE, DROP, INVALID };
+enum Command { SELECT, CREATE, INSERT, UPDATE, TABLE, DELETE, DROP, INVALID };
 
 // Design pattern factory
 class QueryFactory 

@@ -1,5 +1,4 @@
 #include <iostream>
-#include "db_info.cpp"
 #include "queries/query_factory.cpp"
 #include "utils.h"
 #include <map>
@@ -19,20 +18,21 @@ int main()
         {
             cout << "Here are all the tables available :  " << endl;
             vector<string> tables = db.getTables();
+            // display the list of tables
             for (auto table : tables) cout << "\t- " << table << endl;
             if (tables.size() == 0)cout << "none" << endl;
             
-            // display the list of tables
             start = false;
         }
         cout << "please enter a sql query (or tap exit) :" << endl;
-        cin >> input; // get user input from the keyboard
+        getline(cin, input); // get user input from the keyboard
 
         if (input == "exit")
             break;
         try
         {
             QueryFactory factory;
+            cout << input << endl;
             SqlQuery *query = factory.generate_query(input, db);
             query->check();
             query->execute();

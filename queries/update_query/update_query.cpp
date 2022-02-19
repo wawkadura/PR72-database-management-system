@@ -1,7 +1,6 @@
 #include "update_query.h"
 #include <string>
 #include <vector>
-#include "../sql_query.cpp"
 #include <iostream>
 #include "../../utils.h"
 #include "../../error/query_error_exception.cpp"
@@ -14,6 +13,7 @@ bool validateConditions(vector<string> setters)
 {
     return true;
 }
+
 
 // Expected : ['id', '=', '5', ',' , 'name="walid",' , 'number=06123456789,address="Rue,Belfort"']
 // Return : [id=5, name="walid", number="06123456789", address="Rue,Belfort" ]
@@ -100,7 +100,7 @@ void UpdateQuery::parse(string user_sql)
     } while (iss);
 
     // Check the minimum requirement of words
-    if (words.size() < 5)
+    if (words.size() < 4)
     {
         throw(QueryErrorException("Syntaxe error : invalid query, one or more arguments are missing"));
     }
@@ -111,15 +111,15 @@ void UpdateQuery::parse(string user_sql)
     if (position >= words.size() || includedIn(toUpper(words[position]), options))
         throw(QueryErrorException("missing table name"));
 
-    sqlDetails.table = TableFile(words[position]);
-    
+    sqlDetails.tableDef = DefinitionFile(words[position], this->db.getDbPath());
+
     // Check SET
-    if (position >= words.size() || toUpper(words[++position]) != set)
+    if (++position >= words.size() || toUpper(words[position]) != set)
         throw(QueryErrorException("missing SET"));
 
     // Check Setters
-
     vector<string> setters;
+
     for (int i = ++position; i < words.size(); i++)
     {
         if (!includedIn(toUpper(words[i]), options))
@@ -136,46 +136,61 @@ void UpdateQuery::parse(string user_sql)
     if (setters.size() < 1)
         throw(QueryErrorException("missing setters"));
 
-    if (!validateSetters(setters, sqlDetails.setColumnsMapper))
+    map<string, string> setColumnsMapper;
+
+    if (!validateSetters(setters, setColumnsMapper))
         throw(QueryErrorException("error in setters syntax"));
 
-    // Check WHERE
-    if (position >= words.size() || toUpper(words[position]) != where)
-        throw(QueryErrorException("missing where clause"));
+    sqlDetails.tabRecords = mapToRecords(setColumnsMapper);
 
-    // Check conditions
-    vector<string> conditions;
-    for (int i = ++position; i < words.size(); i++)
+    // Check WHERE
+    if (position < words.size() && toUpper(words[position]) == where)
     {
-        // cout << "current word: " << words[i] << endl;
-        if (!includedIn(toUpper(words[i]), options))
+        vector<string> conditions;
+        // Check conditions
+        for (int i = ++position; i < words.size(); i++)
         {
-            conditions.push_back(words[i]);
+            // cout << "current word: " << words[i] << endl;
+            if (!includedIn(toUpper(words[i]), options))
+            {
+                conditions.push_back(words[i]);
+            }
+            else
+            {
+                cout << "position: " << position << " i : " << i << endl;
+                position = i;
+                break;
+            }
         }
-        else
-        {
-            cout << "position: " << position << " i : " << i << endl;
-            position = i;
-            break;
-        }
+        if (!validateConditions(conditions))
+            throw(QueryErrorException("error in where conditions syntax"));
     }
 
-    if (!validateConditions(conditions))
-        throw(QueryErrorException("error in where conditions syntax"));
-
     // Check for the ';'
-    if (position >= words.size() || count(words[position], ';') == 0)
+    if (position >= words.size() || (words[position] != end && count(words[position], ';') == 0))
         throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
 }
+
 UpdateQuery::UpdateQuery(std::string query, DbInfo db) : SqlQuery(db)
-{   
+{
     UpdateQuery::parse(query);
 }
 
 void UpdateQuery::check()
 {
-    this->sqlDetails.table.exist(this->db.getDbPath());
+    this->sqlDetails.tableDef.exist();
+    bool check = checkFields(
+        this->sqlDetails.tabRecords,
+        this->sqlDetails.tableDef.get_table_definition());
+    if (check == false)
+    {
+        throw(QueryErrorException("Fields not corresponding!"));
+    }
 }
-void UpdateQuery::execute() {
 
+void UpdateQuery::execute()
+{
+    this->sqlDetails.contentFile = ContentFile(this->sqlDetails.tableDef.toString(), this->db.getDbPath());
+    // TODO: implemente write record
+    this->sqlDetails.contentFile.write_record(vector<uint8_t>{}, 0);
 }

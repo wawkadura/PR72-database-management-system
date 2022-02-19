@@ -6,8 +6,6 @@
 #include <sstream>
 
 #include "../db_info.h"
-#include "table_file.cpp"
-#include "definition_file.cpp"
 #include "../table_file/key_file.cpp"
 #include "../table_file/index_file.cpp"
 #include "../table_file/content_file.cpp"
@@ -24,6 +22,8 @@ struct SQLDETAILS {   // Declare SQLDETAILS struct type
         table_records tabRecords;
         TableFile table;
         DefinitionFile tableDef;
+        ContentFile contentFile;
+        IndexFile indexFile;
         std::map<std::string, std::string> setColumnsMapper;
         std::string conditions;
         std::string toString(){
@@ -44,9 +44,8 @@ private:
 protected: 
     DbInfo db;
     SQLDETAILS sqlDetails;
+    
 public:
-
-
     SqlQuery(DbInfo _db);
     // SqlQuery(std::string _query, DbInfo _db, TableFile _table);
     virtual void parse(std::string user_sql)=0;
@@ -54,6 +53,7 @@ public:
     virtual void execute()=0;
     SQLDETAILS getSqlDetails();
     std::string parseToUpper(std::string text);
+    void displayResults(vector<vector<string>> results, vector<field_record> queryFields);
     // std::vector<SqlRow> where();
     // SQLDETAILS getSqlDetails();
     ~SqlQuery(){};

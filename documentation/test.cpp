@@ -5,14 +5,14 @@ using namespace std;
 
 int main()
 {
-    ifstream fichier("/com.docker.devenvironments.code/projet/fichier.txt");
+    ifstream fichier("fichier.data");
 
     if (fichier)
     {
         //L'ouverture s'est bien passée, on peut donc lire
 
         string ligne; //Une variable pour stocker les lignes lues
-        fichier.seekg(15, ios::beg);
+        fichier.seekg(9, ios::beg);
         fichier >> ligne;
         cout << ligne;
         // while (getline(fichier, ligne)) //Tant qu'on n'est pas à la fin, on lit

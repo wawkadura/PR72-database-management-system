@@ -10,14 +10,15 @@ class TableFile
 {
     protected:
         std::string table;
+        std::string dbPath;
     public:
         TableFile();
-        TableFile(std::string _table);
+        TableFile(std::string _table, std::string _dbPath);
         std::string toString();
-        void exist(std::string dbPath);
+        std::string getDbPath();
+        void exist();
         ofstream open();
         void close();
-      
 };
  
 #endif

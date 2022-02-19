@@ -3,20 +3,26 @@ using namespace std;
 #include <string>
 #include <vector>
 #include <fstream>
-#include "error/query_error_exception.h"
+#include "../error/query_error_exception.h"
 #include "content_file.h"
 #include "table_file.h"
+#include <direct.h>
+
 
 ContentFile::ContentFile(){};
+ContentFile::ContentFile(string TableDef, string dbPath): TableFile(TableDef, dbPath){};
 
 vector<string> ContentFile::read_record(uint16_t length, uint32_t offset){
-    ifstream file(this->table+"/"+this->table+".data");
-    string line;
-    vector<string> myline;
-    file.seekg(offset*length, ios::beg); // set the possition of the pointeur
-    getline(file, line); //read line in the file 
-    myline.push_back(line);
-    return myline;
+    string tablePath = this->dbPath + "/" + this->table+"/"+this->table+".data";
+    // cout << tablePath << " : it is my path > content file";
+
+    ifstream file(tablePath);
+    char line[500]  = "";
+
+    file.seekg(offset); // set the position of the pointeur
+    file.read(line, length); // read line in the file 
+    // cout << line << endl;
+    return Split(string(line),'|');
 };
 
 void ContentFile::write_record(const vector<uint8_t> &record, uint32_t offset){
@@ -29,4 +35,13 @@ void ContentFile::write_record(const vector<uint8_t> &record, uint32_t offset){
 };
 
 
+void ContentFile::createFile()
+{
+    const char * directoryPath = ("db/"+ table).c_str();
+    _mkdir(directoryPath);
+
+    string name = "db/"+table+"/"+table+".data";;
+    const char * filePath = name.c_str();
+    std::ofstream{filePath};
+}
  

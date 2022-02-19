@@ -1,16 +1,16 @@
 #ifndef INSERT_QUERY_H
 #define INSERT_QUERY_H
-
-#include "sql_query.h"
+#include "sql_query.cpp"
+#include "../db_info.cpp"
 
 class InsertQuery : public SqlQuery {
 private:
     
 public:
     InsertQuery(std::string query, DbInfo db);
-    virtual query_result *parse(string user_sql,query_result *result);
+    virtual void parse(std::string user_sql);
     virtual void check();
-    virtual void execute(insert_query *query);
+    virtual void execute();
 };
 
 #endif

@@ -8,7 +8,7 @@ class DropTableQuery : public DropQuery {
 private:
 
 public:
-    DropTableQuery();
+    DropTableQuery(std::string query, DbInfo db);
     virtual void parse(std::string user_sql);
     virtual void check();
     virtual void execute();

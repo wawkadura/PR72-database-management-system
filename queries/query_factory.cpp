@@ -22,6 +22,7 @@ Command QueryFactory::resolveCommand (std::string input)
         {"INSERT", INSERT},
         {"UPDATE", UPDATE},
         {"DELETE", DELETE},
+        {"TABLE", TABLE},
         {"DROP", DROP}};
 
     auto itr = commandStrings.find(input);
@@ -40,6 +41,8 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
     // get first command
     int spaceIndex = sql.find(" ");
     std::string command = sql.substr(0, spaceIndex);
+    int nextSpaceIndex = sql.find(" ", spaceIndex+1);
+    std::string command2 = sql.substr(spaceIndex+1, nextSpaceIndex - (spaceIndex+1));
 
     // parse to upper case
     std::transform(command.begin(), command.end(), command.begin(),
@@ -48,6 +51,7 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
 
     // as first command is already checked, send the rest
     sql = sql.substr(spaceIndex+1);
+    string sql2 = sql.substr(nextSpaceIndex+1);
 
     switch (QueryFactory::resolveCommand(command))
     {
@@ -55,7 +59,10 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
         query = new SelectQuery(sql, db);
         break;
     // case CREATE:
-    //     query = new CreateQuery(sql, db);
+    //     if(QueryFactory::resolveCommand(command2) == TABLE)
+    //         query = new CreateTableQuery(sql2, db);
+    //     // else
+    //         // query = new CreateDBQuery(sql2, db);
     //     break;
     // case INSERT:
     //     query = new InsertQuery(sql, db);
@@ -67,7 +74,10 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
     //     query = new DeleteQuery(sql, db);
     //     break;
     // case DROP:
-    //     query = new DropQuery(sql, db);
+    //     if(QueryFactory::resolveCommand(command2) == TABLE)
+    //         query = new DropTableQuery(sql2, db);
+    //     // else
+    //         // query = new DropDBQuery(sql2, db);
     //     break;
     }
     return query;

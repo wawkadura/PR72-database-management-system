@@ -15,32 +15,32 @@ string checkFirststring(string words){
     str = words.substr(0,6);
     return str;
 };
-void getPaseValues(vector <string> words,int position){
-    //insert into table values ('toto','toto');
-        // Check  ()
-        ++position;
-        int openP=words[position].find("(");
-        int closinP=words[position].find(")");
-        if (openP==std::string::npos || closinP==std::string::npos) {
-            throw(QueryErrorException("missing closing condition ()")); 
-        }
-        //check end of the querry
-        if(!words[position].find(";")){
-            throw(QueryErrorException("missing '; in the of the query")); 
-        };
-        //check cotnet inside ()
-        if (words[position].length() < 3)
-            throw(QueryErrorException("missing values inside parenthesis"));
-        //('toto','toto'); : i want to remove () and ;
-        words[position].erase(remove(words[position].begin(), words[position].end(), '('), words[position].end());
-        words[position].erase(remove(words[position].begin(), words[position].end(), ')'), words[position].end());
-        words[position].erase(remove(words[position].begin(), words[position].end(), ';'), words[position].end());
 
-        vector<string> myValues = Split(words[position], ',');  
-         for (string i : myValues) {
-            cout<<i<<endl;
-            // sqlDetails.tabRecords = mapToRecords(setColumnsMapper);  
-        }  
+vector <string> getPaseValues(vector <string> words,int position){
+    //insert into table values ('toto','toto');
+    // Check  ()
+    ++position;
+    int openP=words[position].find("(");
+    int closinP=words[position].find(")");
+    if (openP==std::string::npos || closinP==std::string::npos) {
+        throw(QueryErrorException("missing closing condition ()")); 
+    }
+    //check end of the querry
+    if(!words[position].find(";")){
+        throw(QueryErrorException("missing '; in the of the query")); 
+    };
+    //check cotnet inside ()
+    if (words[position].length() < 3)
+        throw(QueryErrorException("missing values inside parenthesis"));
+    //('toto','toto'); : i want to remove () and ;
+    words[position].erase(remove(words[position].begin(), words[position].end(), '('), words[position].end());
+    words[position].erase(remove(words[position].begin(), words[position].end(), ')'), words[position].end());
+    words[position].erase(remove(words[position].begin(), words[position].end(), ';'), words[position].end());
+
+    vector<string> myValues = Split(words[position], ','); 
+    
+    return myValues;
+         
 }
 
 void InsertQuery::parse(string user_sql){
@@ -51,7 +51,6 @@ void InsertQuery::parse(string user_sql){
     vector<string> options = {into, values, end};
     vector<string> words;
     istringstream iss(user_sql);
-
     do
     {
         string word;
@@ -91,14 +90,14 @@ void InsertQuery::parse(string user_sql){
             }
             //values ('toto',toto');
             //last step is to get value
-            getPaseValues(words,position);
+            this->values=getPaseValues(words,position);
         }   
     }else if(position >= words.size() || toUpper(words[position]) != values)
     {
         throw(QueryErrorException("missing condition VALUES")); 
     }else{
         //('toto',toto');
-        getPaseValues(words,position);
+    this->values=getPaseValues(words,position);
     }
         
 };
@@ -114,6 +113,12 @@ void InsertQuery::check() {
     }
 }
 
-void InsertQuery::execute() {
 
+void InsertQuery::execute() {
+    // table_definition def = this->sqlDetails.tableDef.get_table_definition();
+    int nextIndex = this->sqlDetails.indexFile.size();
+    int nextContent = this->sqlDetails.contentFile.size();
+    index_entry entry = {true};
+    this->sqlDetails.indexFile.write_index_entry(entry,nextIndex);
+    this->sqlDetails.contentFile.write_record(values,nextContent);
 }

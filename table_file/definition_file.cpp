@@ -15,9 +15,8 @@ table_definition DefinitionFile::get_table_definition()
 {
     string lign;
     table_definition tableDef;
-
     string TableDefPath = this->dbPath + "/" + this->table + "/" + this->table + ".def";
-    cout << TableDefPath << endl;
+
     ifstream file(TableDefPath);
     if (file.is_open())
     {
@@ -43,18 +42,26 @@ table_definition DefinitionFile::get_table_definition()
 
 void DefinitionFile::write_table_definition(const table_definition &def)
 {
+    string TableDefPath = this->dbPath + "/" + this->table + "/" + this->table + ".def";
+
     ofstream file;
     string str = "";
+
     for (field_definition d : def.definitions)
-        str = str + to_string(static_cast<int>(d.field_type)) + " " + d.field_name + "\n";
-    file.open(this->table);
+    {
+        str = str + d.field_name + " " + to_string(static_cast<int>(d.field_type)) + "\n";
+    }
+
+    file.open(TableDefPath);
     file << str;
     file.close();
 };
 
 void DefinitionFile::deleteTableFile()
 {
-    const char *c = this->table.c_str();
+    string TableDefPath = this->dbPath + "/" + this->table;
+
+    const char *c = TableDefPath.c_str();
     DIR *const directory = opendir(c);
     if (directory)
     {
@@ -66,20 +73,26 @@ void DefinitionFile::deleteTableFile()
                 continue;
             }
             char filename[strlen(c) + strlen(entry->d_name) + 2];
-            sprintf(filename, "%s/%s", this->table, entry->d_name);
+            char charz[100];
+            strcpy(charz, TableDefPath.c_str());
+
+            sprintf(filename, "%s/%s", charz ,entry->d_name);
             remove(filename);
         }
         closedir(directory);
         rmdir(c);
     }
+    else
+        cout << "je rentre pas dedans" << endl;
 }
 
 void DefinitionFile::createFile()
 {
-    const char * directoryPath = ("db/"+ table).c_str();
+    const char *directoryPath = ("db/" + table).c_str();
     _mkdir(directoryPath);
 
-    string name = "db/"+table+"/"+table+".def";;
-    const char * filePath = name.c_str();
+    string name = "db/" + table + "/" + table + ".def";
+    ;
+    const char *filePath = name.c_str();
     std::ofstream{filePath};
 }

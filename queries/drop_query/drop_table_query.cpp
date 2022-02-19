@@ -1,5 +1,4 @@
 #include "drop_table_query.h"
-#include "../../utils.h"
 
 using namespace std;
 

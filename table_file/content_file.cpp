@@ -25,7 +25,7 @@ vector<string> ContentFile::read_record(uint16_t length, uint32_t offset){
     return Split(string(line),'|');
 };
 
-void ContentFile::write_record(const vector<uint8_t> &record, uint32_t offset){
+void ContentFile::write_record(const vector<std::string> &record, uint32_t offset){
     ofstream file(this->table+"/"+this->table+".data");
     file.seekp(offset, ios::end); // set the possition of the pointeur to the end of the file
     for (int i=0; i < record.size(); i++){
@@ -44,4 +44,10 @@ void ContentFile::createFile()
     const char * filePath = name.c_str();
     std::ofstream{filePath};
 }
- 
+
+int ContentFile::size() {
+    std::fstream  in(this->table+"/"+this->table+".data", std::ios_base::in | std::ios_base::ate | std::ios_base::binary);
+    in.seekg(0, ios::end);
+    int size = in.tellg();
+    return size; 
+}

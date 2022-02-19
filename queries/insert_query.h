@@ -4,9 +4,13 @@
 #include "../table_file/key_file.h"
 #include "../utils.h"
 
-class InsertQuery : public SqlQuery {
+class InsertQuery : public SqlQuery
+{
 private:
-    
+
+protected:
+    std::vector<string> values;
+
 public:
     InsertQuery(std::string query, DbInfo db);
     virtual void parse(std::string user_sql);

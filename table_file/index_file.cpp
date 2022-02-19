@@ -50,3 +50,11 @@ void IndexFile::createFile()
     const char * filePath = name.c_str();
     std::ofstream{filePath};
 }
+
+int IndexFile::size() {
+    string tablePath = this->dbPath + "/" + this->table+"/"+this->table+".idx";
+    std::fstream  in(tablePath, std::ios_base::in | std::ios_base::ate | std::ios_base::binary);
+    in.seekg(0, ios::end);
+    int size = in.tellg();
+    return size; 
+}

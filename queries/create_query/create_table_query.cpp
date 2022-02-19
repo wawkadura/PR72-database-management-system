@@ -34,6 +34,7 @@ bool validateAttributs(vector<string> attributs, map<string, string> &m)
             break;
         if (toUpper(word) == "KEY")
             continue;
+        word = removeChar(word, ';');
         if (att != "")
         {
             m.insert({att, word});
@@ -45,12 +46,6 @@ bool validateAttributs(vector<string> attributs, map<string, string> &m)
             att = word;
         }
     }
-    for (auto var : m)
-    {
-        cout << var.first << endl;
-        cout << var.second << endl;
-    }
-
     if (m.size() == 0)
         return false;
 
@@ -59,22 +54,23 @@ bool validateAttributs(vector<string> attributs, map<string, string> &m)
 
 table_definition mapToDefinition(map<string, string> m)
 {
+
     table_definition definitions;
-    map<string, string>::iterator it;
     std::vector<field_definition> fields;
 
-    for (it = m.begin(); it != m.end(); it++)
+    for (auto def : m)
     {
-        // TODO: replace it by a switch of different types
-        field_definition fd = {field_name : it->first, field_type : TYPE_TEXT};
+        field_definition fd = {field_name : def.first, field_type : TYPE_TEXT};
         fields.push_back(fd);
     }
+    definitions.definitions = fields;
 
     return definitions;
 }
 
 void CreateTableQuery::parse(string user_sql)
 {
+    cout << " FACTORY PARSE:" << user_sql << endl;
     sqlDetails.primaryCommand = "CREATE TABLE";
     string end = ";";
     vector<string> words;
@@ -127,19 +123,23 @@ void CreateTableQuery::parse(string user_sql)
     if (!validateAttributs(attributs, setColumnsMapper))
         throw(QueryErrorException("error in attributs syntax"));
 
-    this->tb = mapToDefinition(setColumnsMapper);
+    table_definition td= mapToDefinition(setColumnsMapper);
+    this->tb = td;
 
     // Check the ';'
     // cout << words[position] << endl;
-    cout << words[position] << endl;
     if (position >= words.size() || (words[position] != end && count(words[position], ';') == 0))
         throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
 }
 
 void CreateTableQuery::execute()
 {
+    table_definition t = this->tb;
+
     this->sqlDetails.tableDef.createFile();
     this->sqlDetails.tableDef.write_table_definition(this->tb);
     this->sqlDetails.contentFile = ContentFile(this->sqlDetails.tableDef.toString(), this->sqlDetails.tableDef.getDbPath());
+    this->sqlDetails.contentFile.createFile();
     this->sqlDetails.indexFile = IndexFile(this->sqlDetails.tableDef.toString(), this->sqlDetails.tableDef.getDbPath());
+    this->sqlDetails.indexFile.createFile();
 }

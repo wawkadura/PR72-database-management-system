@@ -17,5 +17,6 @@ class IndexFile : public TableFile
         index_entry get_index_entry(uint32_t position);
         map<int,int> getOffsets(bool active);
         void createFile();
+        int size();
 };
 

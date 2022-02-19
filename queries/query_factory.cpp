@@ -48,22 +48,27 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
     std::transform(command.begin(), command.end(), command.begin(),
                    [](unsigned char c)
                    { return std::toupper(c); });
+    std::transform(command2.begin(), command2.end(), command2.begin(),
+                   [](unsigned char c)
+                   { return std::toupper(c); });
 
     // as first command is already checked, send the rest
-    sql = sql.substr(spaceIndex+1);
     string sql2 = sql.substr(nextSpaceIndex+1);
+    sql = sql.substr(spaceIndex+1);
 
     switch (QueryFactory::resolveCommand(command))
     {
     case SELECT:
         query = new SelectQuery(sql, db);
         break;
-    // case CREATE:
-    //     if(QueryFactory::resolveCommand(command2) == TABLE)
-    //         query = new CreateTableQuery(sql2, db);
-    //     // else
-    //         // query = new CreateDBQuery(sql2, db);
-    //     break;
+    case CREATE:
+        if(QueryFactory::resolveCommand(command2) == TABLE){
+            // cout << "dzadza" << sql2 << endl;
+            query = new CreateTableQuery(sql2, db);
+        }
+        // else
+            // query = new CreateDBQuery(sql2, db);
+        break;
     // case INSERT:
     //     query = new InsertQuery(sql, db);
     //     break;
@@ -73,12 +78,12 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
     // case DELETE:
     //     query = new DeleteQuery(sql, db);
     //     break;
-    // case DROP:
-    //     if(QueryFactory::resolveCommand(command2) == TABLE)
-    //         query = new DropTableQuery(sql2, db);
-    //     // else
-    //         // query = new DropDBQuery(sql2, db);
-    //     break;
+    case DROP:
+        if(QueryFactory::resolveCommand(command2) == TABLE)
+            query = new DropTableQuery(sql2, db);
+        // else
+            // query = new DropDBQuery(sql2, db);
+        break;
     }
     return query;
 }

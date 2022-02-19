@@ -6,8 +6,8 @@
 
 #include "sql_query.cpp"
 #include "select_query.cpp"
-// #include "create_query/create_table_query.cpp"
-// #include "drop_query/drop_table_query.cpp"
+#include "create_query/create_table_query.cpp"
+#include "drop_query/drop_table_query.cpp"
 #include "update_query/update_query.cpp"
 #include "../db_info.cpp"
 

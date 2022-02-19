@@ -192,5 +192,5 @@ void UpdateQuery::execute()
 {
     this->sqlDetails.contentFile = ContentFile(this->sqlDetails.tableDef.toString(), this->db.getDbPath());
     // TODO: implemente write record
-    this->sqlDetails.contentFile.write_record(vector<uint8_t>{}, 0);
+    // this->sqlDetails.contentFile.write_record(vector<uint8_t>{}, 0);
 }

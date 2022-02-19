@@ -1,7 +1,8 @@
 #ifndef DROP_TABLE_QUERY_H
 #define DROP_TABLE_QUERY_H
 
-#include "drop_query.h"
+#include "drop_query.cpp"
+
 #include <string>
 
 class DropTableQuery : public DropQuery {

@@ -98,8 +98,6 @@ void SelectQuery::expand(){
             queryFields.push_back({f.field_name, f.field_type, {0,0,0,f.field_name}});
     }
     this->sqlDetails.tabRecords.fields = queryFields;
-    cout << "eazezae";
-    cout << this->sqlDetails.tableDef.toString() << endl;
 }
 
 

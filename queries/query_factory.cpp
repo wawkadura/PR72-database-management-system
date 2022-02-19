@@ -69,15 +69,15 @@ SqlQuery* QueryFactory::generate_query(std::string sql, DbInfo db)
         // else
             // query = new CreateDBQuery(sql2, db);
         break;
-    // case INSERT:
-    //     query = new InsertQuery(sql, db);
-    //     break;
+    case INSERT:
+        query = new InsertQuery(sql, db);
+        break;
     case UPDATE:
         query = new UpdateQuery(sql, db);
         break;
-    // case DELETE:
-    //     query = new DeleteQuery(sql, db);
-    //     break;
+    case DELETE:
+        query = new DeleteQuery(sql, db);
+        break;
     case DROP:
         if(QueryFactory::resolveCommand(command2) == TABLE)
             query = new DropTableQuery(sql2, db);

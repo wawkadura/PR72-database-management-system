@@ -15,8 +15,9 @@ class ContentFile : public TableFile // the file class inherits the protected at
         ContentFile();
         ContentFile(std::string tableDef, std::string dbPath);
         vector<std::string> read_record(uint16_t length, uint32_t offset); 
-        void write_record(const std::vector<std::string> &record, uint32_t offset);   
+        void write_record(const std::vector<std::string> &record, uint32_t offset, int colNum);   
         void createFile();
+
         int size();
 };
 

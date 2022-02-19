@@ -38,7 +38,8 @@ void KeyFile::update_key(string table,uint64_t last_value){
     FILE *key = KeyFile::open_key_file(table_key, wb);
     fwrite(file_value > last_value ? &file_value : &last_value, sizeof(unsigned long long), 1, key);
     fclose(key);
-    KeyFile::close();
+    
+    // KeyFile::close();
 };
 
 FILE* KeyFile::open_key_file(const char *table_key,char *mode){

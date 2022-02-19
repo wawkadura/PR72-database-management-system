@@ -25,10 +25,11 @@ void TableFile::exist()
     }
 };
 
-void TableFile::close()
+void TableFile::close(string extension)
 {
+    string tablePath = this->dbPath + "/" + this->table+"/"+this->table+ extension;
     ofstream file;
-    file.open(table);
+    file.open(tablePath);
     if (file.is_open())
     {
         file.close(); // file close

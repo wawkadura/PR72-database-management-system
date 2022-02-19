@@ -1,6 +1,6 @@
 #include "insert_query.h"
 #include <vector>
-#include<algorithm>
+#include <algorithm>
 
 using namespace std;
 
@@ -67,12 +67,14 @@ void InsertQuery::parse(string user_sql){
     int position = 0;
 
     // Check into condition
-    ++position;
+    // ++position;
     if (position >= words.size() || toUpper(words[position]) != into)
         throw(QueryErrorException("missing condition INTO"));
 
     sqlDetails.tableDef = DefinitionFile(words[++position], this->db.getDbPath()); //get the table name 
- 
+    sqlDetails.contentFile = ContentFile(words[position], this->db.getDbPath()); //get the table name 
+    sqlDetails.indexFile = IndexFile(words[position], this->db.getDbPath()); //get the table name 
+
     //if the position 3 is values 
     if(words[++position].size()!=6 && toUpper(checkFirststring(words[position]))==values){
         // what i will get :insert into table values ('toto',toto');
@@ -118,7 +120,8 @@ void InsertQuery::execute() {
     // table_definition def = this->sqlDetails.tableDef.get_table_definition();
     int nextIndex = this->sqlDetails.indexFile.size();
     int nextContent = this->sqlDetails.contentFile.size();
+    int colNum = this->sqlDetails.tableDef.get_table_definition().definitions.size();
     index_entry entry = {true};
-    this->sqlDetails.indexFile.write_index_entry(entry,nextIndex);
-    this->sqlDetails.contentFile.write_record(values,nextContent);
+    this->sqlDetails.indexFile.write_index_entry(entry,nextIndex, colNum);
+    this->sqlDetails.contentFile.write_record(values,nextContent, colNum);
 }

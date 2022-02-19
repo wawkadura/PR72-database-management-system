@@ -18,7 +18,7 @@ class TableFile
         std::string getDbPath();
         void exist();
         ofstream open();
-        void close();
+        void close(std::string extension);
 };
  
 #endif

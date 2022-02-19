@@ -8,7 +8,30 @@
 IndexFile::IndexFile(){};
 IndexFile::IndexFile(string TableDef, string dbPath): TableFile(TableDef, dbPath){};
 
-void IndexFile::write_index_entry(const index_entry &entry, uint32_t offset){};
+void IndexFile::write_index_entry(const index_entry &entry, uint32_t offset, int colNum){
+    string tablePath = this->dbPath + "/" + this->table+"/"+this->table+".idx";
+    ifstream oldValues;
+    oldValues.open(tablePath);
+    vector<string> memData;
+    string str;
+    string lastVal;
+    while (getline(oldValues, str)){
+        memData.push_back(str);
+        int spaceInd = str.find(" ");
+        lastVal = str.substr(spaceInd+1,str.find(" ", spaceInd+1)-spaceInd);
+    }
+    cout << "oups :" << lastVal << endl;
+    oldValues.close();
+
+    ofstream file;
+    file.open(tablePath);
+    for (string s : memData){
+        file <<  s << endl;
+    }
+    int newVal = lastVal!="" ? stoi(lastVal) + colNum*51+2 : 0;
+    file<< "1 " << newVal <<" " << colNum*51 <<endl; 
+    file.close();
+};
 index_entry IndexFile::get_index_entry(uint32_t position){return index_entry();};
 
 map<int, int> IndexFile::getOffsets(bool active){
@@ -39,7 +62,33 @@ map<int, int> IndexFile::getOffsets(bool active){
     //     cout << i.first << ", " << i.second << endl;
     // }
     return offsets;
+};
+
+void IndexFile::delete_record()
+{
+    string tablePath = this->dbPath + "/" + this->table + "/" + this->table + ".idx";
+    ifstream test;
+    test.open(tablePath);
+    vector<string> memData;
+    string str;
+    while (getline(test, str))
+    {
+        str = "0" + str.substr(1);
+        memData.push_back(str);
+    }
+    test.close();
+    
+    ofstream file;
+    file.open(tablePath);
+
+    for (string s : memData)
+    {
+        file << s << endl;
+    }
+    file.close();
+
 }
+
 
 void IndexFile::createFile()
 {

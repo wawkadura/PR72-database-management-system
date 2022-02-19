@@ -1,7 +1,7 @@
 #ifndef DELETE_QUERY_H
 #define DELETE_QUERY_H
 
-#include "sql_query.cpp"
+#include "sql_query.h"
 
 class DeleteQuery : public SqlQuery {
 private:

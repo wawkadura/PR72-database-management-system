@@ -1,6 +1,6 @@
 #ifndef INSERT_QUERY_H
 #define INSERT_QUERY_H
-#include "sql_query.cpp"
+#include "sql_query.h"
 #include "../table_file/key_file.h"
 #include "../utils.h"
 

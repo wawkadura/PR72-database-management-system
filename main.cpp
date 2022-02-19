@@ -1,6 +1,5 @@
 #include <iostream>
 #include "queries/query_factory.cpp"
-#include "utils.h"
 #include <map>
 
 int main()

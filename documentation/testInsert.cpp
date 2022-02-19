@@ -10,7 +10,7 @@ int main()
     DbInfo d("db");
     try
     {
-        InsertQuery p("insert INTO tb1 values", d);
+        InsertQuery p("insert INTO tb1 values (test);", d);
     }
     catch (const QueryErrorException &e)
     {

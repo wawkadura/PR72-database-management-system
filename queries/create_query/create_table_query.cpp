@@ -7,15 +7,14 @@ CreateTableQuery::CreateTableQuery(std::string query, DbInfo db) : SqlQuery(db)
 {
     CreateTableQuery::parse(query);
 }
-
+void CreateTableQuery::check() {}
 
 bool validateAttributs(vector<string> attributs, map<string, string> &m)
 {
     string first = attributs[0];
     string last = attributs[attributs.size() - 1];
-    if (count(first, '(') == 1 || count(last, ')'))
+    if (count(first, '(') != 1 || count(last, ')') != 1)
         return false;
-
     string att = "";
     string _type = "";
 
@@ -37,11 +36,19 @@ bool validateAttributs(vector<string> attributs, map<string, string> &m)
             continue;
         if (att != "")
         {
-            m.insert(att, word);
+            m.insert({att, word});
+
             att = "";
         }
         else
+        {
             att = word;
+        }
+    }
+    for (auto var : m)
+    {
+        cout << var.first << endl;
+        cout << var.second << endl;
     }
 
     if (m.size() == 0)
@@ -50,7 +57,8 @@ bool validateAttributs(vector<string> attributs, map<string, string> &m)
     return true;
 }
 
-table_definition mapToDefinition(map<string,string> m){
+table_definition mapToDefinition(map<string, string> m)
+{
     table_definition definitions;
     map<string, string>::iterator it;
     std::vector<field_definition> fields;
@@ -58,7 +66,7 @@ table_definition mapToDefinition(map<string,string> m){
     for (it = m.begin(); it != m.end(); it++)
     {
         // TODO: replace it by a switch of different types
-        field_definition fd = {field_name: it->first,field_type:TYPE_TEXT };
+        field_definition fd = {field_name : it->first, field_type : TYPE_TEXT};
         fields.push_back(fd);
     }
 
@@ -70,12 +78,15 @@ void CreateTableQuery::parse(string user_sql)
     sqlDetails.primaryCommand = "CREATE TABLE";
     string end = ";";
     vector<string> words;
+
     istringstream iss(user_sql);
     do
     {
         string word;
         iss >> word;
-        words.push_back(word);
+        if (word != "")
+            words.push_back(word);
+
     } while (iss);
 
     int position = 0;
@@ -88,12 +99,13 @@ void CreateTableQuery::parse(string user_sql)
 
     // Check attributs
     vector<string> attributs;
-
+    // cout << words.size() << endl;
     for (int i = ++position; i < words.size(); i++)
     {
-        if (words[i] != end)
+        if (words[i] != end && words[i] != "")
         {
             attributs.push_back(words[i]);
+            position = i;
         }
         else
         {
@@ -101,6 +113,11 @@ void CreateTableQuery::parse(string user_sql)
             break;
         }
     }
+
+    // for(auto var : attributs)
+    // {
+    //     cout<< var << endl;
+    // }
 
     if (attributs.size() < 1)
         throw(QueryErrorException("missing attributs"));
@@ -113,14 +130,16 @@ void CreateTableQuery::parse(string user_sql)
     this->tb = mapToDefinition(setColumnsMapper);
 
     // Check the ';'
-    if (++position >= words.size() || (words[position] != end && count(words[position], ';') == 0))
+    // cout << words[position] << endl;
+    cout << words[position] << endl;
+    if (position >= words.size() || (words[position] != end && count(words[position], ';') == 0))
         throw(QueryErrorException("error syntax : missing the ';' at the end of the query "));
 }
 
 void CreateTableQuery::execute()
 {
-    this->sqlDetails.tableDef.createFile(); 
-    this->sqlDetails.tableDef.write_table_definition(this->tb); 
+    this->sqlDetails.tableDef.createFile();
+    this->sqlDetails.tableDef.write_table_definition(this->tb);
     this->sqlDetails.contentFile = ContentFile(this->sqlDetails.tableDef.toString(), this->sqlDetails.tableDef.getDbPath());
     this->sqlDetails.indexFile = IndexFile(this->sqlDetails.tableDef.toString(), this->sqlDetails.tableDef.getDbPath());
 }

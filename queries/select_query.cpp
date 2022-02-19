@@ -71,6 +71,12 @@ void SelectQuery::parse(string user_sql) {
 void SelectQuery::check() {
     this->sqlDetails.toString();
     this->sqlDetails.table.exist();
+    vector<field_record> queryFields = this->sqlDetails.tabRecords.fields;
+
+    if(queryFields.size()==1 && queryFields[0].field_name=="*") {
+        expand();
+        return;
+    }
     bool check = checkFields(
         this->sqlDetails.tabRecords, 
         this->sqlDetails.tableDef.get_table_definition()
@@ -88,16 +94,16 @@ void SelectQuery::expand(){
     vector<field_record> queryFields = this->sqlDetails.tabRecords.fields;
     if(queryFields.size()==1 && queryFields[0].field_name=="*"){
         queryFields.clear();
-        cout<<"ldr";
         for (field_definition f : this->sqlDetails.tableDef.get_table_definition().definitions)
             queryFields.push_back({f.field_name, f.field_type, {0,0,0,f.field_name}});
     }
-    cout << this->sqlDetails.tableDef.toString();
+    this->sqlDetails.tabRecords.fields = queryFields;
+    cout << "eazezae";
+    cout << this->sqlDetails.tableDef.toString() << endl;
 }
 
 
 void SelectQuery::execute(){
-    expand();
     map<int, int> activeOffsets = this->sqlDetails.indexFile.getOffsets(true); // first : Offset, second : Length
     vector<field_definition> tableFields = this->sqlDetails.tableDef.get_table_definition().definitions;
     vector<field_record> queryFields = this->sqlDetails.tabRecords.fields;
